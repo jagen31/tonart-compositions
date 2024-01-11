@@ -61,11 +61,13 @@
     ;; => rhythm, (seq note), instrument
     (apply-rhythm) ; (@ [(seq A)] rhythm) -> A 
     ;; => note, (seq note), instrument
-    (note->midi) ; note -> midi
+    (volume 4)
+    (tuning 12tet) (note->tone) ; note -> midi
     ;; => midi, (seq note), instrument
     ;; realizer will ignore the seq. midi is present w/ instrument and will be performed QED
     (tempo 120)
     (apply-tempo)
     )))
 
+(play sound)
 (rs-write sound "sound.wav")

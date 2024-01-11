@@ -96,11 +96,11 @@
     (insert-rests)
     (measure->mxml-measure) #:capture [time-sig]))
 
-(realize (draw-realizer [800 200]) (music the-piece))
+#;(realize (draw-realizer [800 200]) (music the-piece))
 
-(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
+#;(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
 
-(displayln (realize (linuxsampler-realizer) the-piece-lsampler)
+#;(displayln (realize (linuxsampler-realizer) the-piece-lsampler)
            (open-output-file "picardy.cpp" #:exists 'replace))
 
 #;(write-xml (realize (unload-musicxml) the-piece-mxml)
