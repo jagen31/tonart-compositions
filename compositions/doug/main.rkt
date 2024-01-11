@@ -59,7 +59,7 @@ then comp starting chord = E (A5) and comp key/final chord = Db (P4).
          (define-values (p* a*) (values (car p+a) (cadr p+a)))
 
          (with-syntax ([p p*] [a a*])
-           (qq-art stx
+           (qq-art expr
              (|@| () 
                (voice@ (chord-voice) (pitch p a))
                (voice@ (key-voice) (key key-pitch key-accidental major)))))])))
@@ -113,7 +113,6 @@ realize it [[ and it's not a very good way! :) ]].
           (run-transpose-diatonic)
           (apply-rhythm) (octave 5) (^->note))
         
-
         (voice@ (left-hand) 
           ;; map the chords to the comp rhythm.
           (rhythm->holes)
@@ -132,11 +131,12 @@ realize it [[ and it's not a very good way! :) ]].
         ;; convert measure intervals to raw beat intervals
         (metric-interval->interval)
         (midi->full-midi)
+        (tempo 120)
+        (apply-tempo)
         ;; convert to on/off events
         (d/dt))
         
-      #;(tempo 120)
-      #;(apply-tempo)])]
+      ])]
 
 @chunk[<*>
   (require (except-in art number) (except-in tonart number attribute) tonart/linuxsampler
@@ -146,6 +146,12 @@ realize it [[ and it's not a very good way! :) ]].
   <the-definitions>
   <the-music>
   #;(displayln (realize quote-realizer (put (the-composition-for-computer-perf)) (interpret main)))
+
+  (displayln 
+    (realize (quote-realizer)
+      (the-composition-for-perf)
+      (interpret main)
+      (voice@ (left-hand) (rhythm->holes) (fill-holes chord))))
 
   (define result 
     (realize (linuxsampler-realizer) 

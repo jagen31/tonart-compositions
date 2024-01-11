@@ -51,7 +51,7 @@
     (measure@ 32 (i@ [0 2] (delete ^) (-- [1 (^ 1)] [1 (^ 1)])))))
 
 
-#;(define-art the-piece-rsound
+(define-art the-piece-rsound
   the-piece
   (x-picardy-tune)
   (metric-interval->interval)
@@ -62,7 +62,7 @@
   (voice@ (four) (instrument Clarinet))
   (voice@ (five) (instrument Clarinet))
 
-  (key d 0 minor) (^->note) (note->midi) 
+  (key d 0 minor) (^->note) (tuning 12tet) (note->tone) 
 
   (tempo 120) (apply-tempo))
 
@@ -84,7 +84,7 @@
   (tempo 120) (apply-tempo) (d/dt))
 
 
-(define-art the-piece-mxml
+#;(define-art the-piece-mxml
   the-piece
   (x-picardy-tune)
   (metric-interval->interval) 
@@ -98,10 +98,10 @@
 
 (realize (draw-realizer [800 200]) (music the-piece))
 
-#;(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
+(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
 
 (displayln (realize (linuxsampler-realizer) the-piece-lsampler)
            (open-output-file "picardy.cpp" #:exists 'replace))
 
-(write-xml (realize (unload-musicxml) the-piece-mxml)
+#;(write-xml (realize (unload-musicxml) the-piece-mxml)
            (open-output-file "picardy.musicxml" #:exists 'replace))

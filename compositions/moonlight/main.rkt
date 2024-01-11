@@ -1,6 +1,6 @@
 #lang racket
 
-(require art tonart tonart/rsound rsound (for-syntax syntax/parse))
+(require art art/timeline tonart tonart/common-practice tonart/rsound rsound (for-syntax syntax/parse))
 
 (define-art moonlight-chords
   (seq (chords (c 1 m #:v [(g 1 3) (c 1 4) (e 0 4)]) 
@@ -22,42 +22,61 @@
   (voiced-chord->note-seq)
   (seq-ref))
 
-(define result
-  (realize (linuxsampler-realizer) (voice@ (accomp) moonlight-accomp (instrument piano))
+(define-art moonlight-bass
+  (seq (notes (c 1 3) (b 0 2) (a 0 2) (f 1 2) (g 1 2) (c 1 3) (b 1 2) (c 1 3) (f 1 2) (b 0 2) (b 0 2) 
+              (e 0 3) (e 0 3) (d 0 3)))
+  (rhythm 4 4 2 2 4 4 4 2 2 2 2 4 4 4)
+  (apply-rhythm))
 
-    (voice@ (bass)
-      (seq (notes (c 1 3) (b 0 2) (a 0 2) (f 1 2) (g 1 2) (c 1 3) (b 1 2) (c 1 3) (f 1 2) (b 0 2) (b 0 2) 
-                  (e 0 3) (e 0 3) (d 0 3)))
-      (rhythm 4 4 2 2 4 4 4 2 2 2 2 4 4 4)
-      (apply-rhythm)
-      (instrument pedal)
-      (instrument piano))
+(define-art moonlight-melody
+  (mi@ [(5 4) (10 4)]
+    (seq (notes (g 1 4) (g 1 4) (g 1 4) (g 1 4) (g 1 4) (g 1 4) (a 0 4) (g 1 4) (f 1 4) (b 0 4) (e 0 4)))
+    (rhythm 0.75 0.25 3 0.75 0.25 2 2 2 1 1 1))
 
-    (voice@ (melody)
-      (mi@ [(5 4) (10 4)]
-        (seq (notes (g 1 4) (g 1 4) (g 1 4) (g 1 4) (g 1 4) (g 1 4) (a 0 4) (g 1 4) (f 1 4) (b 0 4) (e 0 4)))
-        (rhythm 0.75 0.25 3 0.75 0.25 2 2 2 1 1 1))
+  (mi@ [(10 4)]
+    (seq (notes (g 0 4) (g 0 4) (g 0 4) (g 0 4) (g 0 4)))
+    (rhythm 0.75 0.25 3 0.75 0.25))
 
-      (mi@ [(10 4)]
-        (seq (notes (g 0 4) (g 0 4) (g 0 4) (g 0 4) (g 0 4)))
-        (rhythm 0.75 0.25 3 0.75 0.25))
+  (apply-rhythm))
 
-      (apply-rhythm)
-      (instrument flute))
+(define-art moonlight-ensemble
+  (voice@ (melody) moonlight-melody (instrument flute))
+  (voice@ (accomp) moonlight-accomp (instrument piano))
+  (voice@ (bass) moonlight-bass (instrument pedal) (instrument piano)))
 
-    (measure@ 1
-      (note->midi)
-      (instrument-map 
-        [piano . 000/000_Montre_8]
-        [pedal . 000/000_Montre_8]
-        [flute . 000/003_Montre_8_Prestant_4])
-      (tempo 66)
-      (metric-interval->interval)
-      (apply-tempo)
-      (midi->full-midi)
-      (d/dt))))
+(define-art moonlight-lsampler
+  moonlight-ensemble
+  (instrument-map 
+    [piano . 000/000_Montre_8]
+    [pedal . 000/000_Montre_8]
+    [flute . 000/003_Montre_8_Prestant_4])
+  (metric-interval->interval) (note->midi) (tempo 66) (apply-tempo) (midi->full-midi) (d/dt))
 
+(define cpp (realize (linuxsampler-realizer) moonlight-lsampler))
 
-(define file (open-output-file "moonlight.cpp" #:exists 'replace))
-(displayln result file)
-(close-output-port file)
+(define cppfile (open-output-file "moonlight.cpp" #:exists 'replace))
+(displayln cpp cppfile)
+(close-output-port cppfile)
+
+(realize (quote-realizer)
+  moonlight-ensemble
+  (metric-interval->interval)
+  (delete seq)
+  (time-sig 4 4)
+  (enclose-in-measures [note])
+  (rewrite-in-seq (insert-rests)))
+
+#;(define-art moonlight-mxml
+  moonlight-ensemble
+  (metric-interval->interval)
+  (time-sig 4 4)
+  (enclose-in-measures [note])
+  (rewrite-in-seq 
+    (insert-rests)
+    (rewrite-in-measure (exact-subdivide 48 0.01))
+    (measure->mxml-measure)))
+
+#;(define xml (realize (unload-musicxml) moonlight-mxml))
+
+#;(define xmlfile (open-output-file "moonlight.musicxml" #:exists 'replace))
+#;(write-xml xml xmlfile)
