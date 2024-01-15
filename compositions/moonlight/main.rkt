@@ -1,6 +1,7 @@
 #lang racket
 
-(require art art/timeline tonart tonart/common-practice tonart/rsound rsound (for-syntax syntax/parse))
+(require art art/timeline tonart tonart/common-practice tonart/rsound rsound 
+         (for-syntax syntax/parse))
 
 (define-art moonlight-chords
   (seq (chords (c 1 m #:v [(g 1 3) (c 1 4) (e 0 4)]) 

@@ -5,7 +5,8 @@
 (define-art the-key (key d 0 minor))
 
 ;; FIXME 0.5 0.5 0.5 ... figure that out
-(define-art cello-suite-thing (seq (^s 1 5 5 5 9 5 9 5 1)) (rhythm 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 1) (apply-rhythm))
+(define-art cello-suite-thing
+  (seq (^s 1 5 5 5 9 5 9 5 1)) (rhythm 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.5 1) (apply-rhythm))
 
 (define-art bass-rhythm (rhythm 6.5 0.5 0.5 0.5))
 
