@@ -1,0 +1,221 @@
+% $ biblatex auxiliary file $
+% $ biblatex bbl format version 3.3 $
+% Do not modify the above lines!
+%
+% This is an auxiliary file used by the 'biblatex' package.
+% This file may safely be deleted. It will be recreated by
+% biber as required.
+%
+\begingroup
+\makeatletter
+\@ifundefined{ver@biblatex.sty}
+  {\@latex@error
+     {Missing 'biblatex' package}
+     {The bibliography requires the 'biblatex' package.}
+      \aftergroup\endinput}
+  {}
+\endgroup
+
+
+\refsection{0}
+  \datalist[entry]{nyt/global//global/global/global}
+    \entry{visual-2020}{inproceedings}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=e354a0dca6b00c01f599ada0f01700be}{%
+           family={Andersen},
+           familyi={A\bibinitperiod},
+           given={Leif},
+           giveni={L\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=83c01ef7d6843f80ad45d352f0391c08}{%
+           family={Ballantyne},
+           familyi={B\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=f2dd06499ca403079167fe9967155025}{%
+           family={Felleisen},
+           familyi={F\bibinitperiod},
+           given={Matthias},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \strng{fullhash}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \strng{fullhashraw}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \strng{bibnamehash}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \strng{authorbibnamehash}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \strng{authornamehash}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \strng{authorfullhash}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \strng{authorfullhashraw}{741fdd23d4bc0dfde31fc36d48a65e01}
+      \field{sortinit}{A}
+      \field{sortinithash}{2f401846e2029bad6b3ecc16d50031e2}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{ACM on Programming Languages}
+      \field{title}{Adding interactive visual syntax to textual code}
+      \field{year}{2020}
+      \true{nocite}
+      \field{pages}{1\bibrangedash 28}
+      \range{pages}{28}
+      \verb{urlraw}
+      \verb https://doi.org/10.1145/3428290
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1145/3428290
+      \endverb
+    \endentry
+    \entry{ywiw-icfp-2002}{inproceedings}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=f67be08dba35f19beb90d091395a0a1d}{%
+           family={Flatt},
+           familyi={F\bibinitperiod},
+           given={Matthew},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{f67be08dba35f19beb90d091395a0a1d}
+      \strng{fullhash}{f67be08dba35f19beb90d091395a0a1d}
+      \strng{fullhashraw}{f67be08dba35f19beb90d091395a0a1d}
+      \strng{bibnamehash}{f67be08dba35f19beb90d091395a0a1d}
+      \strng{authorbibnamehash}{f67be08dba35f19beb90d091395a0a1d}
+      \strng{authornamehash}{f67be08dba35f19beb90d091395a0a1d}
+      \strng{authorfullhash}{f67be08dba35f19beb90d091395a0a1d}
+      \strng{authorfullhashraw}{f67be08dba35f19beb90d091395a0a1d}
+      \field{sortinit}{F}
+      \field{sortinithash}{2638baaa20439f1b5a8f80c6c08a13b4}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{ACM Intl. Conf. Functional Programming}
+      \field{title}{Composable and Compilable Macros: You Want it When?}
+      \field{year}{2002}
+      \true{nocite}
+      \field{pages}{72\bibrangedash 83}
+      \range{pages}{12}
+    \endentry
+    \entry{tonart-farm-2024}{inproceedings}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=a7d266aea14bebe91b7b5010605632cc}{%
+           family={Gentner},
+           familyi={G\bibinitperiod},
+           given={Jared},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{a7d266aea14bebe91b7b5010605632cc}
+      \strng{fullhash}{a7d266aea14bebe91b7b5010605632cc}
+      \strng{fullhashraw}{a7d266aea14bebe91b7b5010605632cc}
+      \strng{bibnamehash}{a7d266aea14bebe91b7b5010605632cc}
+      \strng{authorbibnamehash}{a7d266aea14bebe91b7b5010605632cc}
+      \strng{authornamehash}{a7d266aea14bebe91b7b5010605632cc}
+      \strng{authorfullhash}{a7d266aea14bebe91b7b5010605632cc}
+      \strng{authorfullhashraw}{a7d266aea14bebe91b7b5010605632cc}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{12th ACM SIGPLAN International Workshop on Functional Art, Music, Modelling, and Design}
+      \field{title}{Demo: Composable Compositions with Tonart}
+      \field{year}{2024}
+      \true{nocite}
+      \field{pages}{42\bibrangedash 44}
+      \range{pages}{3}
+      \verb{urlraw}
+      \verb https://doi.org/10.1145/3677996.3678294
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1145/3677996.3678294
+      \endverb
+    \endentry
+    \entry{musicxml-2001}{inproceedings}{}{}
+      \name{author}{1}{}{%
+        {{un=0,uniquepart=base,hash=53516534c45798dbb8ef207e20283c62}{%
+           family={Good},
+           familyi={G\bibinitperiod},
+           given={Michael},
+           giveni={M\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{53516534c45798dbb8ef207e20283c62}
+      \strng{fullhash}{53516534c45798dbb8ef207e20283c62}
+      \strng{fullhashraw}{53516534c45798dbb8ef207e20283c62}
+      \strng{bibnamehash}{53516534c45798dbb8ef207e20283c62}
+      \strng{authorbibnamehash}{53516534c45798dbb8ef207e20283c62}
+      \strng{authornamehash}{53516534c45798dbb8ef207e20283c62}
+      \strng{authorfullhash}{53516534c45798dbb8ef207e20283c62}
+      \strng{authorfullhashraw}{53516534c45798dbb8ef207e20283c62}
+      \field{sortinit}{G}
+      \field{sortinithash}{32d67eca0634bf53703493fb1090a2e8}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{Proceedings of XML}
+      \field{title}{MusicXML: An Internet-Friendly Format for Notation Interchange}
+      \field{year}{2001}
+      \true{nocite}
+      \verb{urlraw}
+      \verb https://www.musicxml.com/for-developers/
+      \endverb
+      \verb{url}
+      \verb https://www.musicxml.com/for-developers/
+      \endverb
+    \endentry
+    \entry{sketch-2019}{inproceedings}{}{}
+      \name{author}{3}{}{%
+        {{un=0,uniquepart=base,hash=020771b078970a18fdc9941010272aec}{%
+           family={Hempel},
+           familyi={H\bibinitperiod},
+           given={Brian},
+           giveni={B\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=0d64de002e2698bde299b67e97ef2bcf}{%
+           family={Lubin},
+           familyi={L\bibinitperiod},
+           given={Justin},
+           giveni={J\bibinitperiod},
+           givenun=0}}%
+        {{un=0,uniquepart=base,hash=547b75d5f2912a0a8a06db4498cd31a1}{%
+           family={Chugh},
+           familyi={C\bibinitperiod},
+           given={Ravi},
+           giveni={R\bibinitperiod},
+           givenun=0}}%
+      }
+      \strng{namehash}{149b00593c9653b3dd85e9e476985d67}
+      \strng{fullhash}{149b00593c9653b3dd85e9e476985d67}
+      \strng{fullhashraw}{149b00593c9653b3dd85e9e476985d67}
+      \strng{bibnamehash}{149b00593c9653b3dd85e9e476985d67}
+      \strng{authorbibnamehash}{149b00593c9653b3dd85e9e476985d67}
+      \strng{authornamehash}{149b00593c9653b3dd85e9e476985d67}
+      \strng{authorfullhash}{149b00593c9653b3dd85e9e476985d67}
+      \strng{authorfullhashraw}{149b00593c9653b3dd85e9e476985d67}
+      \field{sortinit}{H}
+      \field{sortinithash}{23a3aa7c24e56cfa16945d55545109b5}
+      \field{extradatescope}{labelyear}
+      \field{labeldatesource}{}
+      \field{labelnamesource}{author}
+      \field{labeltitlesource}{title}
+      \field{booktitle}{32nd Annual ACM Symposium on User Interface Software and Technology}
+      \field{title}{Sketch-n-Sketch: Output-Directed Programming for SVG}
+      \field{year}{2019}
+      \true{nocite}
+      \field{pages}{281\bibrangedash 292}
+      \range{pages}{12}
+      \verb{urlraw}
+      \verb https://doi.org/10.1145/3332165.3347925
+      \endverb
+      \verb{url}
+      \verb https://doi.org/10.1145/3332165.3347925
+      \endverb
+    \endentry
+  \enddatalist
+\endrefsection
+\endinput
+

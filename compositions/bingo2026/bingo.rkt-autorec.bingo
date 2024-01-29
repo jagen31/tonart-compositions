@@ -1,0 +1,77 @@
+#lang racket
+
+(require art (for-syntax syntax/parse racket/random racket/draw))
+
+(define-art-object (row []))
+
+(define-art-rewriter rows
+  (λ (stx)
+    (syntax-parse stx
+      [(_ [value ...] ...)
+       (qq-art stx (ix-- (row value ...) ...))])))
+
+(define-art 2026-potential-goals
+  (rows [boston-mom "Mom came to Boston"]
+        [boston-ed-n-meggin "Ed and Meggin came to Boston"]
+        [rave-jose-n-jenny "Raved with Jose and Jenny"]
+        [perform-with-peter "Performed something with Peter"]
+        [hymns "Recorded 20 Hymns"]
+        [sample-organ "Josh produced a Boston Virtual Organ"]
+        [play-service "Played a piece at a service"]
+        [audio-setup "Rigged the house"]
+        [compose-with-allen "Produced some form of art with Allen"]
+        [memoir-songs "Had an incident that triggered a Memoir Song"]
+        [cape-cod "Defended a fort at high tide"]
+        [compose-local "Composed for a local group"]
+        [mesh "Hall Ave got on the mesh"]
+        [club-passing "Learned Club Passing"]
+        [study-break "Performed at Halloween Study Break"]
+        [conference-talk "Gave a conference talk"]
+        [biggs "Got the Biggs Scholarship this year"]
+        [farm-perform "Performed at FARM performance evening"]
+        [livecode-perform "Performed at Livecode boston"]
+        [host-a-rave "Hosted a mini-rave for my friends"]
+        [composition-competition "Submitted to a composition competition"]
+        [fluxis-book "Mastering the Fluxis Vol. I was completed"]
+        [pennsylvania "Visited two major cities in Pennsylvania"]
+        [blue-wave "Democrats swept mid-terms"]
+        [boston-chamber "Performed with a friend at Boston chamber music"]
+        [drive-in-boston "Drove in Boston for some reason"]
+        [shape-note "Sang with a sacred-harp choir"]
+        [jazz-thomas "Performed at a venue with Thomas"]
+        [racket-contrib "Contributed a library to Racket or Rhombus"]
+        [computopia-game "Computopia became a video game"]
+        [hired "Jared got someone hired"]
+        [triple-threat "Composed and performed a piece with organ, dancing, and juggling"]
+        [themed-bedroom "The bedroom is not only clean but also has a theme"]))
+
+(define-art-rewriter symbols
+  (λ (stx)
+    (syntax-parse stx
+      [(_ sym ...)
+       (qq-art stx (ix-- (symbol sym) ...))])))
+
+(define-art-rewriter bitmaps
+  (λ (stx)
+    (syntax-parse stx
+      [(_ sym ...)
+       #:with (bm ...) (for/list ([sym (syntax->list #'(sym ...))]) #`(bitmap #,(save-png (read-bitmap (syntax-e sym)))))
+       (qq-art stx (ix-- bm ...))])))
+
+(define-art card
+  (ix--
+    (symbols livecode-perform farm-perform themed-bedroom perform-with-peter shape-note)
+    (symbols fluxis-book play-service compose-local pennsylvania boston-ed-n-meggin)
+    (symbols audio-setup rave-jose-n-jenny triple-threat cape-cod computopia-game)
+    (symbols hired boston-chamber host-a-rave club-passing blue-wave)
+    (symbols racket-contrib compose-with-allen study-break mom-boston biggs)))
+
+
+
+(define-art card2
+  (ix--
+   (bitmaps "livecode.png" "farm-perform.png" "room.jpg" "peter.jpg" "sacred-harp.png")
+   (bitmaps "fluxis.jpg" "church.jpeg" "blank.png" "blank.png" "blank.png")
+   (bitmaps "setup.jpg" "blank.png" "blank.png" "blank.png" "blank.png")
+   (bitmaps "blank.png" "blank.png" "blank.png" "passing.jpeg" "blank.png")
+   (bitmaps "blank.png" "windband.jpg" "harvard.jpg" "guinness.jpg" "ohs.jpeg")))

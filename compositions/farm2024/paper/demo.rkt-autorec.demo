@@ -1,0 +1,17 @@
+#lang racket
+
+(require tonart tonart/private/common-practice/transform "../graph.rkt" "../tala/main.rkt" (for-syntax racket/math))
+
+(define-art-object (hymn-tune [name]))
+(define-art-object (taal [name]))
+
+(define-art cantus picardy-^s picardy-rhythm (apply-rhythm))
+
+(define-art harmony 
+  (transforms [S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [R] [R] [N]))
+
+(define-art descant-fun
+  (function (x) (+ (sin x) (sin (* 2 x)))))
+
+(define-art descant
+  (i@ [0 80] (loop 8 descant-fun) (loop 7 arachartal) (expand-loop)) (function->image pi (- pi)))

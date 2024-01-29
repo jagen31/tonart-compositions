@@ -1,0 +1,26 @@
+#lang racket
+
+(require tonart (for-syntax syntax/parse))
+(define-art-object (location []))
+
+(define-art test1
+  picardy-^s picardy-rhythm (apply-rhythm))
+
+(define-art test2
+  (i@ [0 84]
+      (loop 12
+            (i@ [0 4] (location kitchen))
+            (i@ [4 8] (location livingroom))
+            (i@ [8 12] (location dining-room)))))
+
+(define-art-rewriter location->instrument
+  (λ (stx)
+    (define locations (context-ref*/within (current-ctxt) (get-id-ctxt stx) #'location))
+    (define instruments
+      (for/list ([loc locations])
+        (syntax-parse loc
+          #:datum-literals [kitchen livingroom dining-room]
+          [(_ kitchen) (qq-art loc (instrument Clarinet))]
+          [(_ livingroom) (qq-art loc (instrument Flute))]
+          [(_ dining-room) (qq-art loc (instrument |Yamaha Grand Piano|))])))
+    #`(context #,@(map delete-expr locations) #,@instruments)))

@@ -1,0 +1,5 @@
++ play_queued.ck
++ go.ck
+{ Go.queueMe(); Machine.add("test.ck"); }
+{ Go.queueMe(); Machine.add("test2.ck"); }
+{ Go.advanceTime(20::second); }

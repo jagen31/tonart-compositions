@@ -1,0 +1,90 @@
+#lang racket
+
+(require art (for-syntax syntax/parse) (prefix-in im: 2htdp/image) art/sequence/ravel open-app pict/code (only-in pict pict->bitmap))
+
+(define-art-object (rkt [code]))
+
+(define-drawer racket-drawer
+  (λ (e)
+    (syntax-parse e
+      [({~literal rkt} expr)
+
+       #`(begin (get-current-code-font-size (λ () 32))
+                (im:overlay (pict->bitmap (code expr))
+                            (im:rectangle #,(drawer-width) #,(drawer-height) 'solid 'transparent)))]
+      [_ #f])))
+
+(register-drawer! rkt racket-drawer)
+
+(define-art-realizer assemble-racket-mod
+  (λ (stx)
+    #;(define sorted-ctxt (sort (current-ctxt) < #:key (λ (x) (expr-single-index x))))
+    (define result 
+      (for/fold ([acc '()] #:result (reverse acc))
+                ([expr (current-ctxt)])
+        (syntax-parse expr
+          [({~literal rkt} code ...) (append (reverse (syntax->list #'(code ...))) acc)]
+          [_ acc])))
+    #`(module example racket #,@result (provide (all-defined-out)))))
+
+(define-art-realizer assemble-racket-tl
+  (λ (stx)
+    #;(define sorted-ctxt (sort (current-ctxt) < #:key (λ (x) (expr-single-index x))))
+    (define result 
+      (for/fold ([acc '()] #:result (reverse acc))
+                ([expr (current-ctxt)])
+        (syntax-parse expr
+          [({~literal rkt} code ...) (append (reverse (syntax->list #'(code ...))) acc)]
+          [_ acc])))
+    #`(begin #,@result)))
+
+(define-syntax (! stx)
+  (syntax-parse stx
+    [(_ expr ...)
+     #'(realize (assemble-racket-tl) expr ...)]))
+
+(define-syntax (->mod stx)
+  (syntax-parse stx
+    [(_ expr ...)
+     #'(realize (assemble-racket-mod) expr ...)]))
+
+(define-syntax (show stx)
+  (syntax-parse stx
+    [(_ [w h] expr ...)
+     #`(begin (im:save-image (dr [w h] expr ...) "foo.png") (open-app "foo.png"))]))
+
+
+
+(define-art-object (file [name]))
+
+(define-art lecture-scenes
+  (name@ flashback-open
+         (ix--
+          (file "lecture2.rkt")
+          (file "form-example.rkt")
+          (file "score-example.rkt")))
+  (name@ flashback-close
+         (ix-- 3
+               (file "lecture2.rkt")
+               (file "forms-n-scores.rkt"))))
+
+(define-art-realizer ls-realizer
+  (λ (stx)
+    #`(list #,@(for/list ([f (context-ref* (current-ctxt) #'file)])
+                 (syntax-parse f
+                   [(_ name) (syntax-e #'name)])))))
+
+(define-syntax (ls stx)
+  (syntax-parse stx
+    [(_ expr ...)
+     #'(realize (ls-realizer) expr ...)]))
+
+
+
+#;(realize (assemble-racket) (seq (ix@ 0 constraint-langs) (ix@ 1 scores)) (! 0 2) (! 1 2) (seq-ref))
+#;(require (submod 'example score))
+
+(define modules-diagram "fill me in")
+
+
+

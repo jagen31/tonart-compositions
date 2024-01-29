@@ -1,0 +1,6 @@
+#lang racket
+(require tonart)
+
+(define-art scarlatti 
+  (load-musicxml  "compositions/scarlatti/aminor.musicxml" [right left])
+  )

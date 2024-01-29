@@ -1,0 +1,23 @@
+#lang racket
+
+(require art/private/core art/sequence "lib.rkt" "forms-n-scores.rkt" (for-syntax racket/match (only-in racket/list flatten) syntax/parse))
+
+(->mod (seq (ix-- forms scores)) (! 0 2) (! 1 2) (seq-ref))
+(require (for-syntax (except-in (submod 'example form) voice) (submod 'example score) music-lang/lib/repr))
+
+(define-art-rewriter summon-score
+  (λ (_) 
+    (define voices
+      (for/fold ([acc '()])
+                ([v score] [i (in-naturals)])
+        (match v
+          [(voice _ _ (list (measure (list (and items (or (note _ _ _ _) (rest _ _))) ...) _) ...))
+           (define notes
+             (for/list ([item (flatten items)])
+               (match item
+                 [(note (pitch-class pitch accidental) octave duration beat)
+                  #`(i@ [#,beat #,(+ beat (* duration 4))]
+                      (note #,(string->symbol (string-downcase (symbol->string pitch))) #,(match accidental ['sharp 1] ['flat -1] ['none 0]) #,octave))]
+                 [(rest _ _) #'(context)])))
+           (cons #`(voice@ [#,(string->symbol (format "voice~a" i))] #,@notes) acc)])))
+    #`(context #,@voices)))
