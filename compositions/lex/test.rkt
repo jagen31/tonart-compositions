@@ -1,19 +1,19 @@
 #lang racket
 
-(require art art/sequence art/timeline art/namespace tonart tonart/common-practice art/coordinate/subset 
+(require art art/sequence racket/system racket/runtime-path art/timeline art/namespace tonart tonart/common-practice art/coordinate/subset 
          (for-syntax racket/list tonart/liszt racket/dict racket/set racket/match syntax/parse racket/syntax syntax/id-table))
 
 (define-art-rewriter musicxml->tonart
   (λ (stx)
     (qq-art stx
-            (context
-             (rewrite-in-seq
-              (rewrite-in-mxml-measure
-               (rewrite-in-seq (extract-mxml-chords)))
-              (mxml-measure->measure)
-              (rewrite-in-measure (durations->intervals) (ungroup-notes))
-              (measure->music))
-             (inline-music-seq) (delete-from-id-context voice)))))
+      (context
+       (rewrite-in-seq
+        (rewrite-in-mxml-measure
+         (rewrite-in-seq (extract-mxml-chords)))
+        (mxml-measure->measure)
+        (rewrite-in-measure (durations->intervals) (ungroup-notes))
+        (measure->music))
+       (inline-music-seq) (unsubdivide) (delete-from-id-context voice)))))
 
 ;; define some sample music
 (define-art bass-motif

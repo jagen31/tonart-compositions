@@ -59,6 +59,7 @@
 (define-art voice-lead-harmony1
   harmony-dm (chord->voiced-chord 3) (seq (notes [d 0 4] [f 0 4] [a 0 4])) (fill-harmony 0) (voice-lead 3))
 
+;; raise the initial voice leading to raise the harmony
 (define-art voice-lead-harmony2
   harmony-dm (chord->voiced-chord 3) (seq (notes [a 0 4] [d 0 5] [f 0 5])) (fill-harmony 0) (voice-lead 3))
 
