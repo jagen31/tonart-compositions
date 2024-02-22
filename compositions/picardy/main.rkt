@@ -1,6 +1,6 @@
 #lang racket
 
-(require art tonart "song.rkt")
+(require art tonart "picardy.rkt")
 
 (define-art the-piece-rsound
   the-piece
@@ -14,6 +14,7 @@
   (voice@ (five) (instrument Clarinet))
 
   (key d 0 minor) (^->note) (tuning 12tet) (note->tone) 
+  (volume 5)
 
   (tempo 120) (apply-tempo))
 
@@ -49,7 +50,7 @@
 
 #;(realize (draw-realizer [800 200]) (music the-piece))
 
-#;(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
+(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
 
 #;(displayln (realize (linuxsampler-realizer) the-piece-lsampler)
            (open-output-file "picardy.cpp" #:exists 'replace))

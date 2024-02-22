@@ -6,6 +6,13 @@
   (λ (stx)
     #'(context 
         (key c 0 major) (^->note) (tempo 120) (apply-tempo) 
-        (instrument |Clarinet|) (note->midi))))
+        (run-transpose-diatonic)
+        (tuning 12tet) (note->tone) (voice@ (melody) (volume 6)) (voice@ (accomp) (volume 4)))))
 
-(rs-write (mrsr (seq (ix-- (music bass-var) (music block-chords-var) (music broken-chords-var) (music waltz-chords-var))) (inline-music-seq) (postlude)) "out.wav")
+(define-art compiled 
+  (seq (ix-- 
+    (music bass-var) (music block-chords-var) (music broken-chords-var) 
+    (music waltz-var) (music alberti-bass-var) (music march-var) (music ballad-var)))
+  (inline-music-seq))
+
+(rs-write (mrsr compiled (octave 4) (postlude)) "out.wav")

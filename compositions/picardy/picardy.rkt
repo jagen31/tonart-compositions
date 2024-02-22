@@ -38,7 +38,7 @@
     (voice@ (three) bassline (octave 3))
     (voice@ (four)
       ;; FIXME jagen not aesthetic at all.  this just means- countermelody twice :(
-      (measure@ [1 12] (loop 24 countermelody) (metric-interval->interval) (expand-loop) (octave 5)))
+      (i@ [0 48] (loop 24 countermelody) (expand-loop) (octave 5)))
 
     (measure@ [13 20] (voice@ (four) fallen (octave 5)) (voice@ (five) fallen2 (octave 4)))))
 
@@ -52,4 +52,4 @@
     ;; just sounds better
     (measure@ 32 (i@ [0 2] (delete ^) (-- [1 (^ 1)] [1 (^ 1)])))))
 
-(realize (namespace-provide-realizer) (reflect-art-definitions))
+(realize (namespace-provide-realizer) (reify-art-definitions))
