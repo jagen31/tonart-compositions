@@ -1,0 +1,31 @@
+#lang racket
+
+(require art datenart)
+
+(define-art-object (racket [code]))
+
+(define-art schema
+  (@ [(table types)] (column-names name arity))
+  (@ [(table computations)] (column-names name type implementation)))
+
+(define-art data
+  (@ [(table types)] (row (symbol circle) (number 1)) (row (symbol rectangle) (number 2)) (row (symbol triangle) (number 3)))
+
+  (@ [(table computations)]
+    (row
+      (symbol area)
+      (seq (ix-- (name@ c (symbol circle))))
+      (racket (match c [(circle r) (* r r pi)])))
+
+    (row 
+      (symbol area)
+      (seq (ix-- (name@ t (symbol triangle))))
+      (racket 
+        (match this
+          [(triangle a b c)
+           (* 1/4 (sqrt (* (+ a b c) (+ (- a) b c) (+ a (-b) c) (+ a b (- c)))))])))
+
+    (row 
+      (symbol area)
+      (seq (ix-- (name@ r (symbol rectangle))))
+      (racket (match r [(rectangle w h) (* w h)])))))

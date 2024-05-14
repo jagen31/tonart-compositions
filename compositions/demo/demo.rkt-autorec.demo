@@ -1,9 +1,0 @@
-#lang racket
-
-(require tonart)
-
-;; (realize (music-rsound-realizer) ...)
-;; (mrsr ...)
-
-;; (realize (draw-realizer) ...)
-;; (dr ...)

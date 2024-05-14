@@ -30,4 +30,4 @@
         (name@ hr (apply-rhythm) (delete-from-id-context name))
         (rhythm->holes) (fill-holes chord)))))
 
-(realize (namespace-provide-realizer) (reflect-art-definitions))
+(realize (namespace-provide-realizer) (reify-art-definitions))

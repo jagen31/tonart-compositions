@@ -83,11 +83,10 @@ Con-fu-ta-tis.
 @chunk[<the-confutatis>
   (music@ [(1 2) (basses)]
     (-- [4 (seq (ix-- (note a 0 3) (note e 0 3) (note c 0 4) (note a 0 3)))
-           (confutatis-rhythm)]))]
+           confutatis-rhythm]))]
 
 @chunk[<the-definitions>
-  (interpretation+ confutatis
-    [confutatis-rhythm (-- [4 (rhythm 0.75 0.25 1 1)])])]
+  (define-art confutatis-rhythm (-- [4 (rhythm 0.75 0.25 1 1)]))]
 
 (speaking)
 Second measure, second beat.
@@ -97,7 +96,7 @@ Ma-le-dic-tis.
 @chunk[<the-confutatis>
   (music@ [(2 2) (basses)]
     (-- [4 (seq (ix-- (note b 0 3) (note e 0 3) (note d 0 4) (note g 1 3))) 
-           (confutatis-rhythm)]))]
+           confutatis-rhythm]))]
 
 (speaking)
 G-sharp, of course.
@@ -114,11 +113,10 @@ Flam-mis a-cri-bus ad-dic-tis.
 @chunk[<the-confutatis>
   (music@ [(3 2) (basses)]
     (-- [5 (seq (ix-- (note e 0 4) (note d 0 4) (note c 0 4) (note b 0 3) (note a 0 3) (note g 0 3) (note f 0 3) (note d 0 3)))
-           (flammis-rhythm)]))]
+           flammis-rhythm]))]
 
 @chunk[<the-definitions>
-  (interpretation+ confutatis 
-    [flammis-rhythm (-- [5 (rhythm 0.75 0.25 0.75 0.25 0.75 0.25 1 1)])])]
+    (define-art flammis-rhythm (-- [5 (rhythm 0.75 0.25 0.75 0.25 0.75 0.25 1 1)]))]
 
 (speaking)
 And fourth measure, fourth beat — D.
@@ -157,7 +155,7 @@ Con-fu-ta-tis.
 @chunk[<the-confutatis>
   (music@ [(1 4) (tenors)]
     (-- [4 (seq (ix-- (note c 0 4) (note a 0 3) (note d 0 4) (note g 1 3)))
-           (confutatis-rhythm)]))]
+           confutatis-rhythm]))]
 
 (speaking)
 Second measure, fourth beat on D.
@@ -167,7 +165,7 @@ Ma-le-dic-tis.
 @chunk[<the-confutatis>
   (music@ [(2 4) (tenors)]
     (-- [4 (seq (ix-- (note d 0 4) (note b 0 3) (note e 0 4) (note a 0 3)))
-           (confutatis-rhythm)]))]
+           confutatis-rhythm]))]
 
 (speaking)
 All right?
@@ -187,7 +185,7 @@ mis a-cri-bus ad-dic-tis.
     (-- [4 (seq (ix-- (note f 0 4) (note e 0 4) (note d 0 4) (note c 0 4) (note b 0 3) (note a 0 3) (note g 1 3) (note e 0 3)))]
         [5 (seq (ix-- (note d 0 4) (note d 0 4) (note d 1 4) (note d 1 4) (note d 1 4) (note d 1 4) (note e 0 4) (note e 0 3)))])
     (-- [4 (rhythm 0.75 0.25 0.75 0.25 0.75 0.25 0.75 0.25)] 
-        [5 (flammis-rhythm)]))]
+        [5 flammis-rhythm]))]
 
 His voice is lost on the last words, as tenors engulf it and
 take over the soundtrack, singing their whole line from the
@@ -208,8 +206,8 @@ the bass vocal line)
 @chunk[<the-confutatis>
   (i@ [0 24] 
     (voice@ (basses)
-      (copy-voice-to (bassoon-2))
-      (copy-voice-to (bass-trombone))))]
+      #;(copy-voice-to (bassoon-2))
+      #;(copy-voice-to (bass-trombone))))]
 
 The first bassoon and tenor trombone -
 
@@ -237,8 +235,8 @@ Also identical?
 @chunk[<the-confutatis>
   (i@ [0 24]
     (voice@ (tenors)
-      (copy-voice-to [bassoon-1])
-      (copy-voice-to [tenor-trombone])))]
+      #;(copy-voice-to [bassoon-1])
+      #;(copy-voice-to [tenor-trombone])))]
 
 MOZART
 Exactly. The instruments to go with
@@ -254,7 +252,7 @@ tonic and dominant.
         [1 (^ 5)] [1] [1 (^ 1)] [1]
         [1 (^ 5)])
           
-    (measure@ [1 6] (voice@ (trumpet) (copy-voice-to (timpani)))))
+    (measure@ [1 6] (voice@ (trumpet) #;(copy-voice-to (timpani)))))
   
   (measure@ [1 6]
     (voice@ (trumpet) (octave 4))
@@ -359,7 +357,7 @@ dic-tis.
       (octave 5)
       (seq (ix-- (^ 1) (^ 1) (^ 2) (^ 2) (^ 1) 
            (^ 1) (^ 1) (^ 1) (^ 1) (^ 1) (^ 1) (^ 2) (^ 1))))
-      (copy-voice-to (sopranos))
+      #;(copy-voice-to (sopranos))
 
     ;; small correction
     ;; FIXME jagen develop a better interface for this?
@@ -387,16 +385,16 @@ arpeggio.
 He sings the violin figure under the Voca Me (Bars 7,8,9).
 
 @chunk[<the-definitions>
-  (interpretation+ confutatis
-    [voca-ostinato (rhythm 0.5 0.25 0.25 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.25 0.25 0.5 0.5 0.5)]
-    [voca-ostinato-^ (seq (ix-- (^ 1) (^ 3) (^ 5) (^ 8) (^ 7) (^ 6) (^ 5) (^ 4) (^ 3) (^ 2) (^ 3) (^ 4) (^ 5) (^ -2) (^ 1)))])]
+  (define-art voca-ostinato (rhythm 0.5 0.25 0.25 0.5 0.5 0.5 0.5 0.5 0.5 0.5 0.25 0.25 0.5 0.5 0.5))
+  (define-art voca-ostinato-^ (seq (ix-- (^ 1) (^ 3) (^ 5) (^ 8) (^ 7) (^ 6) (^ 5) (^ 4) (^ 3) (^ 2) (^ 3) (^ 4) (^ 5) (^ -2) (^ 1))))]
 
 @chunk[<the-voca>
-  (musi@ [0 15 (strings)]
-    (key c 0 major)
-    (octave 4)
-    (-- 0 [6.5 (voca-ostinato)] [1.5 (rhythm 0.25 0.25 0.5 0.25 0.25)] [6.5 (voca-ostinato)])
-    (-- 0 [6.5 (voca-ostinato-^)] [1.5 (seq (ix-- (^ 3) (^ 5) (^ 8) (^ 5) (^ 3)))] [6.5 (voca-ostinato-^)]))]
+  (measure@ [0 15]
+    (voice@ (strings)
+      (key c 0 major)
+      (octave 4)
+      (-- 0 [6.5 voca-ostinato] [1.5 (rhythm 0.25 0.25 0.5 0.25 0.25)] [6.5 voca-ostinato])
+      (-- 0 [6.5 voca-ostinato-^] [1.5 (seq (ix-- (^ 3) (^ 5) (^ 8) (^ 5) (^ 3)))] [6.5 voca-ostinato-^])))]
 
 MOZART
 (speaking)
@@ -438,32 +436,35 @@ now!
       [timpani . 000/073_Cornemuse_8]
       [strings . 000/065_Quintadena_8])
 
-    (voice@ (tenors) (instrument voice))
-    (voice@ (basses) (instrument voice))
+    (voice@ (tenors) (instrument voice) (volume 8))
+    (voice@ (basses) (instrument voice) (volume 8))
+    (voice@ (sopranos) (instrument voice) (volume 8))
+    (voice@ (altos) (instrument voice) (volume 8))
 
-    (voice@ (sopranos) (instrument voice))
-    (voice@ (altos) (instrument voice))
-    (voice@ (bass-trombone) (instrument trombone))
-    (voice@ (bassoon-2) (instrument bassoon))
+    (voice@ (bass-trombone) (instrument trombone) (volume 6))
+    (voice@ (bassoon-2) (instrument bassoon) (volume 6))
+    (voice@ (tenor-trombone) (instrument trombone) (volume 6))
+    (voice@ (bassoon-1) (instrument bassoon) (volume 6))
 
-    (voice@ (tenor-trombone) (instrument trombone))
-    (voice@ (bassoon-1) (instrument bassoon))
+    (voice@ (trumpet) (instrument trumpet) (volume 4))
+    (voice@ (timpani) (instrument timpani) (volume 4))
 
-    (voice@ (trumpet) (instrument trumpet))
-    (voice@ (timpani) (instrument timpani))
-
-    (voice@ (strings) (instrument strings))
+    (voice@ (strings) (instrument strings) (volume 2))
+    
 
     (tempo 86))
 ]
 
 @chunk[<the-footer>
-  (measure@ 1
+  (|@| ()
     (metric-interval->interval)
-    (interpret confutatis)
     (expand-loop) (apply-rhythm) ; repeats and rhythms
     (run-transpose-diatonic) (^->note) ; working with scale degrees
-    (note->midi) (midi->full-midi) (apply-tempo) (d/dt) ; ready to render
+    (tuning 12tet)
+    (note->tone) 
+    (tone->full-tone)
+    #;(note->midi) #;(midi->full-midi) 
+    (apply-tempo) (d/dt) ; ready to render
     )]
 
 
@@ -472,13 +473,17 @@ now!
 
   <the-definitions>
 
-    (define sound 
-      (realize (linuxsampler-realizer)
+    (define-art music 
        <the-header> 
        (-- [24 <the-confutatis>] [15 <the-voca>])
-       <the-footer>))
+       <the-footer>)
     
-    (define file (open-output-file "confutatis.cpp" #:exists 'replace))
+    #;(define sound (realize (linuxsampler-realizer) music))
+
+    (define sound (realize (music-chuck-realizer) (sound-map) music))
+    
+    #;(define file (open-output-file "confutatis.cpp" #:exists 'replace))
+    (define file (open-output-file "confutatis.ck" #:exists 'replace))
     (displayln sound file)
     (close-output-port file)
     

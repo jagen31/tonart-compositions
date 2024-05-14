@@ -2,7 +2,6 @@
 
 (require tonart tonart/linuxsampler)
 
-(interpretation+ durufle-sicilienne)
 
 (define sound 
   (realize (linuxsampler-realizer)

@@ -6,23 +6,23 @@
 
 ;; [ anne's happy bday extends the hold at the name ]
 (define-art annes-rhythm
-  (happy-birthday) (happy-birthday->rhythm) (rhythm->holes) 
+  happy-birthday-^s happy-birthday-rhythm (rhythm->holes) 
   ;; perform the extension
   (i@ 17 (translate 2)) (unapply-rhythm hole) (delete seq))
 
 ;; the first melody, used for a few variations.
-(define-art melody-in-3 annes-rhythm (happy-birthday) (happy-birthday->^s) (apply-rhythm) (octave 4))
+(define-art melody-in-3 annes-rhythm happy-birthday-^s (apply-rhythm) (octave 4))
 
 (define-art melody-in-4
   ;; FIXME jagen figure out something direct, like the following (which doesnt work.):
   ;; melody-1 (i@ [0 32] (loop 4 (i@ (1 2) (dilate 2))
   (rhythm 0.75 0.25 2 1 1 3 0.75 0.25 2 1 1 3 0.75 0.25 2 1 1 2 5 0.75 0.25 2 1 1 3)
-  (happy-birthday) (happy-birthday->^s) (apply-rhythm) (octave 4))
+  happy-birthday-^s (apply-rhythm) (octave 4))
 
 (define-art melody-in-6
   ;; FIXME jagen figure out something direct, like the following (which doesnt work.):
   (rhythm 2/3 1/3 1 2 1 3 2/3 1/3 1 2 1 3 2/3 1/3 1 2 1 1 2 2/3 1/3 1 2 1 4)
-  (happy-birthday) (happy-birthday->^s) (apply-rhythm) (dilate 3/2) (octave 4))
+  happy-birthday-^s (apply-rhythm) (dilate 3/2) (octave 4))
 
 
 ;; ------------------------
