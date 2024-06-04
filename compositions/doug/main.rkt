@@ -54,7 +54,7 @@ then comp starting chord = E (A5) and comp key/final chord = Db (P4).
          (with-syntax ([p p*] [a a*])
            (qq-art expr
              (|@| () 
-               (voice@ (chord-voice) (pitch p a))
+               (voice@ (chord-voice) (pitch-class p a))
                (voice@ (key-voice) (key key-pitch key-accidental major)))))])))
 ]
 
@@ -122,7 +122,7 @@ realize it [[ and it's not a very good way! :) ]].
     )]
 
 @chunk[<*>
-  (require (except-in art number) (except-in tonart number attribute) tonart/linuxsampler
+  (require (except-in art number string boolean) (except-in tonart number attribute send string boolean) tonart/linuxsampler
     racket
     (for-syntax racket syntax/parse racket/match tonart/liszt))
 

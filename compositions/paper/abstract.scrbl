@@ -4,20 +4,24 @@
 @define-footnote[familiar-note make-familiar-note]
 @provide[make-familiar-note]
 
-Music composition is an artistic process in which a composer analyzes musical
-language from a diverse array of cultures in order to synthesize new works. The
-conscientious composer spends significant time experimenting in multi-language
-music ecosystems and translating the results of these experiments into
-performable or listenable output.  This demo introduces Tonart, an extensible
-system for composing and compiling works expressed in multiple music languages. 
-Terms from the chosen languages are embedded in a "score", a coordinate system 
-abstraction over a physical musical score.  The score is then given semantics 
-in terms of a known music language, using a specified sequence of rewrites.  
-The score is accessible at all points in the sequence.  Tonart's rewriters
-leverage context-sensitivity and locality, corresponding to how notations
-interact when written on physical scores.  Crucially, it is the composer's
-choice how conflicts in different languages' usual semantics are addressed.
-Moreover, using local rewrites, sections of the score may be given
-independent semantics.  In this way, Tonart compiles source multi-language
-scores into performable target scores, which may be further compiled into
-computer performances or human-readable sheet music.
+This demo introduces Tonart, a language and metalanguage for practical music
+composition.  
+
+The object language of Tonart is abstract syntax modeling a traditional
+musical score.  It is extensible- composers choose or invent syntaxes which
+will most effectively express the music they intend to write.  Composition
+proceeds by embedding terms of the chosen syntaxes into a coordinate system that
+corresponds to the structure of a physical score.  Tonart can easily be written
+by hand, as existing scores are a concrete syntax for Tonart.  
+
+The metalanguage of Tonart provides a means of compiling Tonart scores via
+sequences of rewrites.  Tonart's rewrites leverage context-sensitivity and
+locality, modeling how notations interact on traditional scores.  Using
+metaprogramming, a composer can compile a Tonart score with unfamiliar syntax
+into any number of performable scores.  
+
+In this demo, we will write some small Tonart scores.  Initially, the scores
+will contain syntaxes representing standard musical objects.  We will then
+extend the language with a surprise syntax!  We will compile this surprise
+syntax into standard syntaxes and produce sheet music, as well as a computer
+performance.

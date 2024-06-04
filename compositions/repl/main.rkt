@@ -1,7 +1,7 @@
 #lang racket
 
 (require (except-in art string) (except-in tonart string) tonart/common-practice (only-in pict pict->bitmap)
-  2htdp/image
+  (except-in 2htdp/image bitmap)
   #;tonart/private/electronic/chuck/lib
   (except-in racket/gui make-color make-pen send)
   (prefix-in gui: (only-in racket/gui send))

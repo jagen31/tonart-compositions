@@ -193,3 +193,345 @@ duration be an integer, and filling empty spaces with rests.
 (define my-music-musicxml
   (realize (music-musicxml-realizer) my-music (time-sig 4 4) (tonart->musicxml)))
 }
+
+
+
+@section{Tones}
+
+For our purposes, a tone is a sound produced by a regular vibration at a specific frequency.
+When a sound repeats at a fast enough rate it is perceived by the ear as a tone.  The frequency
+corresponds to the "height" of the tone.  Higher frequency tones are perceived as being "higher".
+
+@codeblock{
+<freq>Hz ; Standard Syntax
+440Hz ; Example
+
+(tone <freq>) ; Tonart Syntax
+(tone 440)  ; Example
+}
+
+A special property of how we perceive tones is: two tones that are double each
+other's frequency sound "almost the same" (are hard to tell apart).  This is why
+we can all sing the same songs together, even though we have different vocal
+ranges.
+
+@section{Notes}
+
+For our purposes, notes are a standard meter laid over top of tones
+(frequencies).  
+
+@codeblock{
+;; Standard Syntax
+<pitch-label><accidental><octave>
+Ab5 ; Example
+
+;; Tonart Syntax
+(note <pitch-label> <accidental-number> <octave-number>)
+(note a -1 5) ; Example
+}
+
+Notes are given labels @tt{A1 B1 C1 D1 E1 F1 G1 A2 B2 C2 D2 ...},
+which, in that order, must have increasing corresponding frequencies.  C2 must
+have a frequency exactly double C1.  We call the distance between two notes an
+"interval" and this particular same-sounding, doubled-frequency interval an
+"octave".  Two notes an octave apart will always have the same _pitch-label_,
+just as in the above example.  The octave number is what will vary (C1, C2, C3,
+C4 etc.).  An expanded set of tones can be expressed as a raising or lowering of
+a note, which is done via an "accidental".  To raise a note, the symbol '#'
+(pronounced "sharp") is used.  To lower a note, the symbol 'b' (pronounced
+'flat') is used. The accidental is also preserved between octaves, and the
+pitch-label taken with the octave is called the "pitch class".  For example, a
+raised C is written C#, each distinct pitch classes.  C# in the 4th octave is
+written C#4.  The C# an octave above C#4 is written C#5.  For clairty- C#4 and
+C#5 are in the same pitch class and that pitch class is C#.
+
+@section{Tuning}
+
+A tuning is a named precise mapping of notes to tones.  This usually means mapping
+one octave of symbols- @tt{C #/b D #/b E F #/b G #/b A #/b B} to reasonable frequencies,
+and deriving all the others by doubling or halving those frequencies
+(transposing by octaves).
+
+@codeblock{
+;; Standard Syntax
+<tuning-name><note>=<frequency>
+;; Example
+12tet a=440Hz
+
+;; Tonart Syntax
+(tuning <tuning-name> 
+  [<note> <frequency-number>])
+;; Example
+(tuning 12tet [a 440])
+}
+
+Many tuning systems exist.  When browsing tuning systems, recognize that
+most are uniform ways to tune a @emph{keyboard}.  A performance practice
+for a small group without keyboard, or choir without keyboard, will de facto
+employ a "context sensitive tuning", as the ear and instrument are capable of
+retuning notes to be closer to "more correct" intervals.  I will not speculate
+on what "more correct" means here, but I can safely say that static tuning
+systems are forced to approximate intended intervals in many situations.  Tuning
+on the whole is not a matter of some kind of mathematical correctness, it is
+rather a matter of enhancing expression.
+
+@section{Chords}
+
+Chords are an abstraction over combinations of notes, which often function like 
+a set of pitch classes.  For the purposes of this demo, our chord symbols will
+specify sets of 3 pitch classes, called triads.  
+
+@codeblock{
+;; Standard Syntax
+<pitch-label><accidental><quality-abbrev> 
+or 
+<pitch-class> <quality>
+;; Example
+F#m or F# minor
+
+;; Tonart Syntax
+(chord <pitch-label> <accidental-number> [<quality>])
+;; Example
+(chord f 1 [m])
+}
+
+Any number of notes can be in a chord, including repeats and octave
+transpositions.  Each note must be a member of one of the pitch classes
+corresponding to the chord.  Not all pitch classes from the set need be present
+for a chord to retain its identity.  The pitch label of the chord is called
+the "root" of the chord, and must be present.  The "quality" of the chord
+deals with the intervals between notes in the chord.  C major, CM, or simply C,
+has pitch classes C, E, and G.  C minor or Cm has pitch classes C, Eb, and G.
+These are the two chord qualities that will be used in the demo.
+
+
+In this demo, we will compose a piece of music borrowing ideas from several
+different musical and non-musical traditions.  Some of these objects are
+unfamiliar to most musicians, so the reader is not expected to be familiar
+with them, either.  
+
+The piece will contain a melody, a harmony, and a countermelody.
+
+The melody will be a hymn.  Hymns are songs of worship.  There is a culture of
+preserving hymn tunes and texts ranging from Psalms and scripture, to
+medieval gregorian chants, to hymns Luther wrote and Bach played in services, to
+tunes and texts written by living composers.
+
+The harmony will be specified as a series of neo-riemannian transformations.
+Harmony is a characterization of music by the strengths and proportions of the
+pitches it contains.  A piece's harmony is made up of a number of harmonies
+which are traversed through over time.  The large-scale harmony of an entire
+piece is sometimes referred to as "macroharmony".  Neo-riemannian transforms map
+out a macroharmony by describing incremental changes to a harmony to construct 
+a series of related harmonies.  Our harmony will be realized directly as chords,
+which are a simplified representation, essentially a set of a harmony's
+most prominent pitches.
+
+The countermelody will be specified as a mathematical function.  The function will map
+out the contour of the countermelody, meaning the height of the pitches will follow the
+curve of the function's graph.  The pitches will also automatically be selected
+to be within the harmony.  The rhythm of the countermelody will be a very basic
+interpretation of a Hindu Tala.  Tala is the Indian conception of rhythm and
+Indian classical music has names for different Talas, which are rhythmic spaces
+that many compositions can take place within.  A crucial part of Tala is each
+beat gets a characteristic _word_ in addition to standard timekeeping, which
+gives each beat a distinct quality that Indian musicians would be intimately
+familiar with.
+
+The demo will proceed by composing each part separately.  We will start with the melody,
+write out the harmony, and write a descant (a more intuitive name for this is @emph{countermelody}).
+
+@section{Melody}
+
+The melody will be selected from a hymnal.  Hymnals are books which compile
+together a set of hymns, traditional poems and songs.  Hymn technique can be
+understood as follows- there are hymn texts and hymn tunes.  Many times tunes
+are written for specific texts, but not always.  Tunes and texts are matched by
+"meter".  Meter, in this context, is calculated by counting the syllables from
+each line of text, and the notes in each section of music.  It is reported the
+same way for each, as a series of numbers, separated by dots. 
+
+Tonart contains a hymnal as a library, which is exposed via a SQL-like interface.  
+We will pick a tune from the database which has the meter 8.6.8.6.
+
+@codeblock|{
+(define-art hymn
+  ;; Select all hymns of the intended meter.
+  ;; Hymns are decomposed into the rhythm 
+  ;; of the hymn and the pitches of the hymn, 
+  ;; represented as a sequence of scale 
+  ;; degrees. This is a cosmetic interface 
+  ;; design  decision, not something 
+  ;; fundamental.
+  (table@ tonart-hymnal
+    (select [rhythm ^s]
+      #:where 
+        (art-equal (ref meter) (meter 8 6 8 6))
+      #:into results))
+
+  ;; Convert the results to a sequence
+  (table@ results (table->seq))
+  
+  ;; inline the first row
+  (! 0) (seq-ref) (inline-seq)
+
+  ;; construct the hymn tune from rhythm 
+  ;; and pitches.
+  (apply-rhythm))
+
+(define-art melody (voice@ melody hymn))
+}|
+
+Because the hymns are expressed in scale degrees, we will have to make a choice
+of key and octave later.
+
+
+@section{Harmony}
+
+The harmony will be constructed from neo-riemannian transformations.  These
+transformations are, for our purposes, a set of self-inverting chord to chord
+transformations.  Some of the ones we will use are
+
+@itemize{
+@item{R, for relative, which transforms C major to A minor and back}
+
+@item{L, for leading tone, which transforms C major to E minor and back}
+
+@item{P, for parallel, which transforms C major to C minor and back}
+
+@item{S, for slide, which transforms C major to B minor and back}
+ 
+@item{N, for nebenverwandt, which transforms C major to F minor and back}
+}
+
+@codeblock{
+;; write down the transforms for the harmony.
+;; in converting to chords, an initial chord is 
+;; provided, then the list of transforms 
+;; notated  in the first subform is applied, 
+;; and the second ;; chord is emitted.  Then 
+;; the next subform and chord and so on.
+(define-art harmony 
+  (transforms [R] [L] [N] [P] [L] [P] [S P S]))
+}
+
+@section{Descant}
+
+The descant will be composed of a mathematical function, which will provide the
+contour for the melody to follow.  The rhythm of the countermelody will be
+constructed taking inspiration from a particular system of Indian classical
+music called @emph{Taal}.  Indian classical music is more fundamentally rhythmic
+than western classical music.  A Taal is a specific rhythmic cycle.  Much like
+hymn tunes, popular Tala have names.  We are going to use Theka- a syllabic
+representation of the basic rhythm of a Taal.  They can be realized with
+gestures like clapping and tapping, but the most common instrument to perform a
+Theka on is a Tabla, a pair of hand drums.  Each syllable is rendered as a
+different technique on the drum.  The rhythm spelled out by the Theka we choose
+will form the rhythm of the descant.  The specific notes of the descant will be
+determined by the harmony we established in the last section.
+
+@codeblock|{
+
+(define-art my-theka
+  (table@ tonart-tala-index
+    (select [theka]
+      #:where 
+        (art-equal (ref name) (string "arachartal"))
+      #:into results))
+  
+  (table@ results (table->seq))
+  (! 0) (seq-ref) (inline-seq))
+
+(define-art the-descant
+  (@voice descant
+    (function (+ (sin x) (* 2 (sin x))))
+    ;; loop the theka every 4 beats for 16 beats
+    (i@ [0 16] (loop 4 my-theka) (expand-loop))))
+}|
+
+@section{Assembly}
+
+At this point, we have the fragments of our composition named, and just need to
+compose them, then render them
+
+@codeblock|{
+
+;; the official composition (as we imagined it)
+(define-art composition melody harmony descant)
+
+;; the composition, with all parts compiled 
+;; down to notes
+(define-art composition-notes
+
+  composition
+
+  ;; specify the key
+  (key c 0 major)
+
+  (tuning 12tet)
+    
+  (voice@ melody (octave 5) (^->note))
+
+  ;; turn the harmony into chords, and notes
+  (voice@ harmony 
+    ;; provide the first chord relative to the 
+    ;; key so it will change when we change the 
+    ;; key. This is the analogue of 
+    ;; scale degrees, for chords. 
+    (^chord 1 0 [M]) (^chord->chord) 
+    (run-transformations))
+  
+  (voice@ descant
+    ;; turn the descant function into a bitmap, 
+    ;; turn the bitmap into a group of points 
+    ;; containing the non-white pixels.
+    (function->image) (image->points)
+
+    ;; This is a map I have predefined
+    ;; which translates each syllable of a 
+    ;; Theka into a "hole" and a volume. The 
+    ;; holes will be filled with the notes 
+    ;; of the descant, which will give it 
+    ;; the correct rhythm.
+    theka-volume-map
+
+    ;; use the map to translate the theka
+    (interpret-theka)
+
+    ;; turn the chords of the harmony into 
+    ;; scales
+    (chord->scale)
+    ;; take the holes from the theka, the points 
+    ;; from the function, and the scales from the 
+    ;; harmony and produce notes within the given 
+    ;; range of C4 to C5
+    (holes+points->notes [c 0 4] [c 0 5]))
+
+  ;; render the harmony as notes in a very 
+  ;; basic way.
+  (chord->notes/simple 4))
+
+;; the composition further compiled to tones 
+;; (for electronic performance)
+(define-art composition-for-performance
+  
+  composition-as-notes
+
+  ;;  Turn it into tones
+  (tuning 12tet) (note->tone)
+
+  ;; provide the volumes for the performance
+  (@voice melody (volume 9))
+  (@voice harmony (volume 3))
+  ;; (the descant harmony is already provided
+  ;; by the tala interpretation)
+  composition-as-notes
+  (tuning 12tet) (note->tone))
+}|
+
+Lastly, we play the composition.
+
+@codeblock{
+  (play (music-rsound-realizer)
+    composition-for-performance)
+}

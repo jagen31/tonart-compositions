@@ -3,7 +3,7 @@
 (require tonart)
 
 (define-simple-rewriter picardy-tune x-picardy-tune
-  (picardy) (picardy->rhythm) (seq (picardy) (picardy->^s)) (apply-rhythm))
+  picardy-rhythm picardy->^s (apply-rhythm))
 
 (provide x-picardy-tune)
 

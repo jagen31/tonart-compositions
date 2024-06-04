@@ -630,23 +630,27 @@
 \preDoc
 
 
-\begin{abstract}Music composition is an artistic process in which a composer analyzes musical
-language from a diverse array of cultures in order to synthesize new works. The
-conscientious composer spends significant time experimenting in multi{-}language
-music ecosystems and translating the results of these experiments into
-performable or listenable output.  This demo introduces Tonart, an extensible
-system for composing and compiling works expressed in multiple music languages.
-Terms from the chosen languages are embedded in a "score", a coordinate system
-abstraction over a physical musical score.  The score is then given semantics
-in terms of a known music language, using a specified sequence of rewrites.
-The score is accessible at all points in the sequence.  Tonart{'}s rewriters
-leverage context{-}sensitivity and locality, corresponding to how notations
-interact when written on physical scores.  Crucially, it is the composer{'}s
-choice how conflicts in different languages{'} usual semantics are addressed.
-Moreover, using local rewrites, sections of the score may be given
-independent semantics.  In this way, Tonart compiles source multi{-}language
-scores into performable target scores, which may be further compiled into
-computer performances or human{-}readable sheet music.\end{abstract}\titleAndEmptyVersionAndAuthors{Demo: Composable Compositions with Tonart}{}{\SNumberOfAuthors{1}\SAuthor{\SAuthorinfo{Jared Gentner}{}{\SAuthorPlace{}}{\SAuthorEmail{jagen315@gmail.com}}}}
+\begin{abstract}This demo introduces Tonart, a language and metalanguage for practical music
+composition.
+
+The object language of Tonart is abstract syntax modeling a traditional
+musical score.  It is extensible{-} composers choose or invent syntaxes which
+will most effectively express the music they intend to write.  Composition
+proceeds by embedding terms of the chosen syntaxes into a coordinate system that
+corresponds to the structure of a physical score.  Tonart can easily be written
+by hand, as existing scores are a concrete syntax for Tonart.
+
+The metalanguage of Tonart provides a means of compiling Tonart scores via
+sequences of rewrites.  Tonart{'}s rewrites leverage context{-}sensitivity and
+locality, modeling how notations interact on traditional scores.  Using
+metaprogramming, a composer can compile a Tonart score with unfamiliar syntax
+into any number of performable scores.
+
+In this demo, we will write some small Tonart scores.  Initially, the scores
+will contain syntaxes representing standard musical objects.  We will then
+extend the language with a surprise syntax!  We will compile this surprise
+syntax into standard syntaxes and produce sheet music, as well as a computer
+performance.\end{abstract}\titleAndEmptyVersionAndAuthors{Demo: Composable Compositions with Tonart}{}{\SNumberOfAuthors{1}\SAuthor{\SAuthorinfo{Jared Gentner}{}{\SAuthorPlace{}}{\SAuthorEmail{jagen315@gmail.com}}}}
 \label{t:x28part_x22Demox5fx5fComposablex5fCompositionsx5fwithx5fTonartx22x29}
 
 
@@ -657,19 +661,82 @@ computer performances or human{-}readable sheet music.\end{abstract}\titleAndEmp
 
 \sectionNewpage
 
-\Ssection{Context}{Context}\label{t:x28part_x22Contextx22x29}
+\Ssection{Introduction}{Introduction}\label{t:x28part_x22Introductionx22x29}
 
-In this demo, we will compose a piece of music borrowing language from several different
-musical and non{-}musical traditions.  Some of the concepts are unknown to
-musicians, so it{'}s not an expectation that the viewer is familiar with them,
-either.  However, we will compile to commonly known music objects, which are
-summarized below [and will be re{-}explained, and visualized, in the live
-session].
 
-\Ssubsection{Tones}{Tones}\label{t:x28part_x22Tonesx22x29}
 
-For our purposes, a tone is a sound which is produced by a sine wave
-at a given frequency.
+\Ssubsection{Introduction}{Introduction}\label{t:x28part_x22Introductionx22x29}
+
+We begin this demo with Tonart{'}s syntax.  For the purpose of simplicity, the
+extension points have been elided, and a fixed set of forms is provided for
+each nonterminal.
+
+\Ssubsubsection{Tonart Syntax}{Tonart Syntax}\label{t:x28part_x22Tonartx5fSyntaxx22x29}
+
+Simplified Tonart syntax is as follows:
+
+\hspace*{\fill}\\
+
+\begin{bigtabular}{@{\bigtableleftpad}l@{}l@{}l@{}l@{}}
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
+\hbox{\textrm{$\langle$\textit{form}$\rangle$}} &
+\hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}{\hbox{\texttt{:}}}{\hbox{\texttt{:}}}=\mbox{\hphantom{\Scribtexttt{x}}}}} &
+\hbox{\textrm{$\langle$\textit{id}$\rangle$}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
+\hbox{ } &
+\hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}{\Stttextbar}\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}}} &
+\hbox{\textrm{$\langle$\textit{object}$\rangle$}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
+\hbox{ } &
+\hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}{\Stttextbar}\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}}} &
+\hbox{\textrm{$\langle$\textit{rewriter}$\rangle$}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
+\hbox{ } &
+\hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}{\Stttextbar}\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}}} &
+\hbox{\textrm{$\langle$\textit{context}$\rangle$}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
+\hbox{ } &
+\hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}{\Stttextbar}\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}}} &
+\begin{tabular}[t]{@{}l@{}}
+\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{@}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{coord}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{art{-}form}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}}\end{tabular} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
+\hbox{\textrm{$\langle$\textit{program}$\rangle$}} &
+\hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}{\hbox{\texttt{:}}}{\hbox{\texttt{:}}}=\mbox{\hphantom{\Scribtexttt{x}}}}} &
+\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{define{-}art}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{art{-}id}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{art{-}form}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
+\hbox{ } &
+\hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}{\Stttextbar}\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}}} &
+\begin{tabular}[t]{@{}l@{}}
+\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{realize}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{art{-}realizer}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{art{-}form}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}}\end{tabular}\end{bigtabular}
+
+\textrm{$\langle$\textit{object}$\rangle$}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{note}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{pitch}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{accidental}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{octave}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{tone}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{frequency}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{chord}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{pitch}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{accidental}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{quality}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}
+
+\textrm{$\langle$\textit{rewriter}$\rangle$}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{chord{-}{\Stttextmore}notes}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{note{-}{\Stttextmore}tone}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{apply{-}rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}
+
+\textrm{$\langle$\textit{coord}$\rangle$}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{interval}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{voice}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{id}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{index}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}
+
+\sectionNewpage
+
+\Ssection{Demo}{Demo}\label{t:x28part_x22Demox22x29}
+
+In this demo, we will compose a piece of music borrowing ideas from several
+different musical and non{-}musical traditions.  Some of these objects are
+unfamiliar to most musicians, so the reader is not expected to be familiar
+with them, either.  However, I will be explaining them in terms of more
+well{-}known music objects, and ultimately compiling the whole score into these
+well{-}known objects.  The objects are described below for context.
+
+\Ssubsection{Common Objects}{Common Objects}\label{t:x28part_x22Commonx5fObjectsx22x29}
+
+
+
+\Ssubsubsection{Tones}{Tones}\label{t:x28part_x22Tonesx22x29}
+
+Generally speaking, a tone is a sound produced by a regular vibration at a specific frequency.
+When a sound repeats at a fast enough rate it is perceived by the ear as a tone.  The frequency
+corresponds to the "height" of the tone.  Higher frequency tones are perceived as being "higher".
 
 \begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktSym{{\Stttextless}freq{\Stttextmore}Hz}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Standard}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
@@ -677,19 +744,19 @@ at a given frequency.
 
 \RktMeta{~}
 
-\RktMeta{}\RktPn{(}\RktSym{tone}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}freq{\Stttextmore}}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{tone}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}freq{\Stttextmore}}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
-\RktMeta{}\RktPn{(}\RktSym{tone}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{440}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{xx}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{tone}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{440}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{xx}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
-A special property of how we perceive
-tones is: two tones that are double each other{'}s frequency sound "almost the
-same" (are hard to tell apart).  This is why we can all sing the same songs
-together even though we have different vocal ranges.
+A special property of how we perceive tones is: two tones that are double each
+other{'}s frequency sound "almost the same" (are hard to tell apart).  This is why
+we can all sing the same songs together, even though we have different vocal
+ranges.
 
-\Ssubsection{Notes}{Notes}\label{t:x28part_x22Notesx22x29}
+\Ssubsubsection{Notes}{Notes}\label{t:x28part_x22Notesx22x29}
 
-For our purposes, notes are a standard meter laid over top of tones
-(frequencies).
+For our purposes, notes are labels laid over top of tones, so that each note label
+corresponds to a tone of a certain frequency.
 
 \begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Standard}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
@@ -701,11 +768,11 @@ For our purposes, notes are a standard meter laid over top of tones
 
 \RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
-\RktMeta{}\RktPn{(}\RktSym{note}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}pitch{-}label{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}accidental{-}number{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}octave{-}number{\Stttextmore}}\RktPn{)}\RktMeta{}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}pitch{-}label{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}accidental{-}number{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}octave{-}number{\Stttextmore}}\RktPn{)}\RktMeta{}
 
-\RktMeta{}\RktPn{(}\RktSym{note}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{a}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{{-}1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{5}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{a}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{{-}1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{5}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
-Notes are given labels A1 B1 C1 D1 E1 F1 G1 A2 B2 C2 D2 ...,
+Notes are given labels \Scribtexttt{A1 B1 C1 D1 E1 F1 G1 A2 B2 C2 D2 {\hbox{\texttt{.}}}{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}},
 which, in that order, must have increasing corresponding frequencies.  C2 must
 have a frequency exactly double C1.  We call the distance between two notes an
 "interval" and this particular same{-}sounding, doubled{-}frequency interval an
@@ -715,49 +782,87 @@ C4 etc.).  An expanded set of tones can be expressed as a raising or lowering of
 a note, which is done via an "accidental".  To raise a note, the symbol {'}\#{'}
 (pronounced "sharp") is used.  To lower a note, the symbol {'}b{'} (pronounced
 {'}flat{'}) is used. The accidental is also preserved between octaves, and the
-pitch{-}label taken with the octave is called the "pitch class".  For example, a
+pitch{-}label taken with the accidental is called the "pitch class".  For example, a
 raised C is written C\#, each distinct pitch classes.  C\# in the 4th octave is
 written C\#4.  The C\# an octave above C\#4 is written C\#5.  For clairty{-} C\#4 and
 C\#5 are in the same pitch class and that pitch class is C\#.
 
-\Ssubsection{Tuning}{Tuning}\label{t:x28part_x22Tuningx22x29}
+\Ssubsubsection{Tuning}{Tuning}\label{t:x28part_x22Tuningx22x29}
 
-A tuning is a named precise mapping of notes to tones.  This usually means mapping
-one octave of symbols{-} C \#/b D \#/b E F \#/b G \#/b A \#/b B to reasonable frequencies,
-and deriving all the others by doubling or halving those frequencies
-(transposing by octaves).
+A tuning is a mapping of notes to tones.  In many cases, particularly keyboard
+tuning, this means mapping one octave of symbols{-} \Scribtexttt{C \#/b D \#/b E F \#/b G \#/b
+A \#/b B}{-} to reasonable frequencies, and finding all the others by doubling or
+halving those frequencies (transposing by octaves).
 
-\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Standard}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktSym{{\Stttextless}tuning{-}name{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Standard}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
-\RktMeta{}\RktSym{{\Stttextless}tuning{-}name{\Stttextmore}{\Stttextless}note{\Stttextmore}={\Stttextless}frequency{\Stttextmore}}\RktMeta{}
-
-\RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
-
-\RktMeta{}\RktSym{12tet}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{a=440Hz}\RktMeta{}
+\RktMeta{}\RktSym{12tet}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
 
 \RktMeta{~}
 
-\RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{tuning}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}tuning{-}name{\Stttextmore}}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
-\RktMeta{}\RktPn{(}\RktSym{tuning}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}tuning{-}name{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktSym{{\Stttextless}note{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}frequency{-}number{\Stttextmore}}\RktPn{]}\RktPn{)}\RktMeta{}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{tuning}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{12tet}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
-\RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
+Here is an artwork demonstrating notes being mapped to tones in two different tunings:
 
-\RktMeta{}\RktPn{(}\RktSym{tuning}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{12tet}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktSym{a}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{440}\RktPn{]}\RktPn{)}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+First we draw the notes we want to tune.
 
-Many tuning systems exist.   When browsing tuning
-systems, recognize that these are typically uniform ways to tune a keyboard,
-with compromises based around what kind of music is to be played.  Moreover, a
-performance practice for small groups or vocalists (without keyboard
-accompaniment) will de facto employ a "context sensitive tuning", as the ear and
-instrument are capable of retuning notes to be closer to "more correct"
-intervals.  I will not speculate on what "more correct" means here, but I can
-safely say that static tuning systems are forced to approximate intended
-intervals in many situations.  And that tuning on the whole is not a matter of
-some kind of mathematical correctness, it is rather a matter of enhancing
-expression.
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}notes}
 
-\Ssubsection{Chords}{Chords}\label{t:x28part_x22Chordsx22x29}
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{notes}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{d}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{e}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{200}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{40}\RktPn{]}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}notes}\RktPn{)}
+
+\raisebox{-0.7999999999999972bp}{\makebox[120.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+Next, we place the notes in two different \RktSym{\badlink{\RktValLink{music}}}\RktMeta{} contexts with the two tunings we want to
+try. \RktSym{\badlink{\RktValLink{namespace}}}\RktMeta{} is another type of context which is useful for certain things, though
+just being used for show here.  \RktSym{\badlink{\RktValLink{name@}}}\RktMeta{} is a shorthand for ascribing a \RktSym{\badlink{\RktValLink{name}}}\RktMeta{} coordinate.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}tunings}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{namespace}}}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{name@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{12{-}tone{-}ET}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{music}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{tuning}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{12tet}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}notes}\RktPn{)}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{name@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{Just{-}Intonation}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{music}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{tuning}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{5{-}limit}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}notes}\RktPn{)}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\RktPn{(}\RktSym{scale}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{600}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{100}\RktPn{]}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}tunings}\RktPn{)}\RktPn{)}
+
+\raisebox{-0.0bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_2.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+Finally, we run \RktSym{\badlink{\RktValLink{note{-}{\Stttextmore}tone}}}\RktMeta{}.  Because of the way we wrote this art,
+the code is slightly obfuscated with a few layers of \Scribtexttt{rewrite{-}in} destructuring.
+\RktPn{(}\RktSym{\badlink{\RktValLink{delete}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{\badlink{\RktValLink{tuning}}}\RktPn{)}\RktMeta{} is done to declutter the resulting image.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{scale}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{600}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{100}\RktPn{]}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktSym{my{-}tunings}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rewrite{-}in{-}namespace}}}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rewrite{-}in{-}music}}}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rewrite{-}in{-}seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{note{-}{\Stttextmore}tone}}}\RktPn{)}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{delete}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{tuning}}}\RktPn{)}\RktPn{)}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\raisebox{-0.0bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_3.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+One interesting thing to note is how the Just Intoned result is represented by
+fractions, while the Equal Tempered result is represented by decimals.  This is
+indirectly a result of the fact that Just Intonation is tuned with
+multiplication by whole number ratios, while Equal Temperament is tuned using
+multiplication by an irrational number.
+
+\Ssubsubsection{Chords}{Chords}\label{t:x28part_x22Chordsx22x29}
 
 Chords are an abstraction over combinations of notes, which often function like
 a set of pitch classes.  For the purposes of this demo, our chord symbols will
@@ -765,7 +870,11 @@ specify sets of 3 pitch classes, called triads.
 
 \begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Standard}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
-\RktMeta{}\RktSym{{\Stttextless}pitch{-}label{\Stttextmore}{\Stttextless}accidental{\Stttextmore}{\Stttextless}quality{-}abbrev{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{or}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}pitch{-}class{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}quality{\Stttextmore}}\RktMeta{}
+\RktMeta{}\RktSym{{\Stttextless}pitch{-}label{\Stttextmore}{\Stttextless}accidental{\Stttextmore}{\Stttextless}quality{-}abbrev{\Stttextmore}}\RktMeta{}
+
+\RktMeta{}\RktSym{or}\RktMeta{}
+
+\RktMeta{}\RktSym{{\Stttextless}pitch{-}class{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}quality{\Stttextmore}}\RktMeta{}
 
 \RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
 
@@ -775,30 +884,159 @@ specify sets of 3 pitch classes, called triads.
 
 \RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
 
-\RktMeta{}\RktPn{(}\RktSym{chord}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}pitch{-}label{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}accidental{-}number{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktSym{{\Stttextless}quality{-}abbrev{\Stttextmore}}\RktPn{]}\RktPn{)}\RktMeta{}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{chord}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}pitch{-}label{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}accidental{-}number{\Stttextmore}}\RktMeta{}
+
+\RktMeta{}\mbox{\hphantom{\Scribtexttt{xxxxxxx}}}\RktMeta{}\RktPn{[}\RktSym{{\Stttextless}quality{\Stttextmore}}\RktPn{]}\RktPn{)}\RktMeta{}
 
 \RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
 
-\RktMeta{}\RktPn{(}\RktSym{chord}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{f}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktSym{m}\RktPn{]}\RktPn{)}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{chord}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{f}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktSym{m}\RktPn{]}\RktPn{)}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
-While chords in some music are just an analytical or summary tool with
-debatable real existance, for many guitarists chord symbols and strum patterns
-are the primary building blocks of their musical language.  Jazz charts are both
-summarized in chords and written in chords, though jazz chords typically have 4,
-5, 6 or more members in their corresponding pitch class sets, to phrase it in
-our established terminology.
+Any number of notes can be in a chord, including repeats and octave
+transpositions.  Each note must be a member of one of the pitch classes
+corresponding to the chord.  Not all pitch classes from the set need be present
+for a chord to retain its identity.  The pitch label of the chord is called
+the "root" of the chord, and must be present.  The "quality" of the chord
+deals with the intervals between notes in the chord.  C major, CM, or simply C,
+has pitch classes C, E, and G.  C minor or Cm has pitch classes C, Eb, and G.
+These are the two chord qualities that will be used in the demo.
 
-Any number of notes can be in a chord, including repeats and octave transpositions.
-Not all pitch classes from the set need be present for a chord to retain its identity, either.
-It is important to remember that these are abstractions created to describe the
-phenomena we experience.  For example, a pipe organ playing a single notated
-note may actually be playing a chord of some variety.  Any instrument sounds a
-whole series of tones which we consider to be dominated by the lowest one,
-called the fundamental frequency. It is possible to expand the score into one
-which reflects some musical reality based on the notes, the instruments, the
-chords, the room, the weather that day etc. and then analyze that, but we are
-always going to be applying thresholds to determine what is significant.  Anyway
-having a toolkit to facilitate this kind of thing is useful.
+Here is an example of chords being rewritten to notes.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}chords}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{chords}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{M}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{f}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{m}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{g}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{M}\RktPn{]}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{200}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{40}\RktPn{]}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}chords}\RktPn{)}
+
+\raisebox{-0.7999999999999972bp}{\makebox[136.79999999999998bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_4.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+Next we turn them into notes.  The particular choice of notes is, as mentioned,
+arbitrary.  The \RktSym{\badlink{\RktValLink{chord{-}{\Stttextmore}notes/simple}}}\RktMeta{} rewriter happens to stack the first
+three notes in the chord, ascenting from the given octave.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{300}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{50}\RktPn{]}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{music}}}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktSym{my{-}chords}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rewrite{-}in{-}seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{chord{-}{\Stttextmore}notes/simple}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\raisebox{-0.19999999999998863bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_5.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+\Ssubsubsection{Keys and Degrees}{Keys and Degrees}\label{t:x28part_x22Keysx5fandx5fDegreesx22x29}
+
+A key in music is similar to a chord, being defined by a root pitch and a modality.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Standard}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
+
+\RktMeta{}\RktSym{{\Stttextless}pitch{-}class{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}quality{\Stttextmore}}\RktMeta{}
+
+\RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
+
+\RktMeta{}\RktSym{F\#}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{minor}\RktMeta{}
+
+\RktMeta{~}
+
+\RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
+
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{key}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}pitch{-}label{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}accidental{-}number{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}quality{\Stttextmore}}\RktPn{)}\RktMeta{}
+
+\RktMeta{}\RktCmt{;;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
+
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{key}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{f}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{m}\RktPn{)}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+The difference between the two is a key contains a number of different chords.  Keys are a
+broader description of a harmony, containing a large number of notes, intervals, chords, and
+even idioms which interact
+
+A degree or scale degree represents a pitch class, made relative to the root of a key.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktSym{{\char'136}{\Stttextless}number{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Standard}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
+
+\RktMeta{}\RktSym{{\char'136}2}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}
+
+\RktMeta{~}
+
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{{\char'136}}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}number{\Stttextmore}}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Syntax}\RktMeta{}
+
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{{\char'136}}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{2}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+We will show the first four degrees of three different keys: C major, B{-}flat
+minor, and G{-}sharp major.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}degrees}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{i@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{12}\RktPn{]}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{voice@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{alto}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{{\char'136}s}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{urhy*}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{delete}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{seq}}}\RktPn{)}\RktPn{)}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{{-}{-}}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{4}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{key}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{M}\RktPn{)}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{4}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{key}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{b}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{\mbox{{-}1}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{m}\RktPn{)}\RktPn{]}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{[}\RktVal{4}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{key}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{g}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{M}\RktPn{)}\RktPn{]}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{scale}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{600}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{80}\RktPn{]}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{music}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}degrees}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\raisebox{-0.0bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_6.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{scale}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{600}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{80}\RktPn{]}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{music}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}degrees}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{octave}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxxxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{{\char'136}{-}{\Stttextmore}note}}}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{delete}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{octave}}}\RktPn{)}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\raisebox{-0.20000000000000284bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_7.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+\Ssubsubsection{Rhythm}{Rhythm}\label{t:x28part_x22Rhythmx22x29}
+
+Rhythm is the timing and accentuation of specific beats.  The
+Tonart rhythm object is a useful tool, but is very basic and only
+captures the former.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\Stttextless}number{\Stttextmore}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Tonart}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{syntax}\RktMeta{}
+
+\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/2}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/2}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktCmt{;}\mbox{\hphantom{\Scribtexttt{x}}}\RktCmt{Example}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+
+The series of numbers in the rhythm object denotes lengths
+of time in beats.  A rewriter, \RktSym{\badlink{\RktValLink{apply{-}rhythm}}}\RktMeta{}, can be
+used to place a sequence in time.
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}music}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{notes}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{f}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{b}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{e}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{]}
+
+\mbox{\hphantom{\Scribtexttt{xxxxxxxxxxxxxx}}}\RktPn{[}\RktSym{d}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{e}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{f}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{]}\RktPn{)}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{voice@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{bass}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/4}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/4}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{scale}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{600}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{100}\RktPn{]}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{music}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}music}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\raisebox{-0.19999999999998863bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_8.pdf}}}
+
+\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{scale}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}
+
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{draw{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{600}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{100}\RktPn{]}\RktPn{)}
+
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{music}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{my{-}music}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{apply{-}rhythm}}}\RktPn{)}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\raisebox{-0.19999999999999574bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_9.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
 \postDoc
 \end{document}
