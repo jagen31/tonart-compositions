@@ -4,7 +4,6 @@
 @require[racket/gui]
 
 @include-abstract{abstract.scrbl}
-@include-section{introduction.scrbl}
 @include-section{demo.scrbl}
 
 @(define em (email "jagen315@gmail.com"))

@@ -1,285 +1,247 @@
 #lang scribble/acmart
 @require{references.rkt}
-
+@require[scriblib/footnote]
 @require[(except-in scribble/manual index)
          scribble-abbrevs/manual (for-label tonart)
          (except-in scribble/eval examples)
-         scribble/example]
+         scribble/example
+         scribble/bnf
+         (for-syntax racket/base syntax/parse)]
+
+@title{Demo}
+ 
+@(define-syntax chord->notes (make-rename-transformer #'chord->notes/simple))
 
 @(define helper-eval (make-base-eval))
 @interaction-eval[#:eval helper-eval
-                  (require tonart 2htdp/image)]
+                  (require art/sequence/ravel tonart 2htdp/image)]
 
-@title{Demo}
+@(define-syntax (my-bnf stx)
+   (syntax-parse stx
+     [(_ bnf ...)
+      #`(begin
+      @para{}
+        (let ([#,(datum->syntax stx 'open) @litchar{(}]
+                [#,(datum->syntax stx 'close) @litchar{)}])
+          @BNF[bnf ...]))]))
 
-In this demo, we will compose a piece of music borrowing ideas from several
-different musical and non-musical traditions.  Some of these objects are
-unfamiliar to most musicians, so the reader is not expected to be familiar
-with them, either.  However, I will be explaining them in terms of more
-well-known music objects, and ultimately compiling the whole score into these
-well-known objects.  The objects are described below for context.
+@section{Introduction}
 
-@section{Common Objects}
+We begin this demo by exploring Tonart's syntax.  Tonart is extensible at several points.  To
+reflect this, we'll build our Tonart a few forms at a time.
 
-@subsection{Tones}
+@section{Tonart Syntax}
 
-Generally speaking, a tone is a sound produced by a regular vibration at a specific frequency.
-When a sound repeats at a fast enough rate it is perceived by the ear as a tone.  The frequency
-corresponds to the "height" of the tone.  Higher frequency tones are perceived as being "higher".
+We begin with basic Tonart syntax.  The undefined nonterminals are extension points and will
+progessively defined throughout the demo.
+@linebreak[]
+@(my-bnf
+   (list @nonterm{form}
+         @nonterm{art-id}
+         @nonterm{object}
+         @nonterm{rewriter}
+         @nonterm{context}
+         @BNF-seq-lines[
+           (list @BNF-seq[open @code{@"@"} @BNF-seq[open @kleenestar[@nonterm{coord} close] close]
+                 @hspace[1] @BNF-seq[@kleenestar[@nonterm{form}] close]])])
+
+   (list @nonterm{program}
+         @BNF-seq[open @code{define-art} @nonterm{art-id} @kleenestar[@nonterm{form}] close]
+         @BNF-seq-lines[
+           (list @BNF-seq[open @code{realize} @nonterm{realizer} @kleenestar[@nonterm{form}] close])]))
+@linebreak[]
+A context is a coordinate structure.  Tonart's primary coordinate structure is called @code{music}.
+@linebreak[]
+@(my-bnf 
+  (list @nonterm{context}
+        @BNF-seq[open @code{music} @kleenestar[@nonterm{<form>}] close]))
+@linebreak[]
+@code{music} has two coordinates,
+@linebreak[]
+@(my-bnf
+   (list @nonterm{coordinate}
+         @BNF-seq[open @code{interval} @BNF-seq[open @nonterm{number} @nonterm{number} close] close]
+         @BNF-seq[open @code{voice} @kleenestar[@nonterm{id}] close]))
+@linebreak[]
+which are orthogonal and represent the horizontal (time) and vertical (voice)
+dimensions of a physical score.
+
+The @"@" form is used to embed objects into a context at given coordinates.
+
+@section{Composing In Tonart}
+
+Tonart is compiled into Racket by @emph{realizers}.  We will begin composing with only one object
+and one realizer.
+@linebreak[]
+@(my-bnf 
+  (list @nonterm{object}
+        @BNF-seq[open @code{note} @nonterm{pitch} @nonterm{accidental} @nonterm{octave} close])
+  (list @nonterm{realizer}
+        @BNF-seq[open @code{staff-realizer} @nonterm{clef} close]))
+@centered{------}
+@(examples
+  #:eval helper-eval
+  #:label #f
+  #:no-prompt
+  (realize (staff-realizer [300 150] [treble])
+    (|@| [(interval [0 4]) (voice soprano)]
+      (note c 0 5))))
+This is a note called @tt{C5}, or, C in the fifth octave.  It is sung by the soprano voice, for four 
+beats.
+
+To play this note from the computer, we will convert it into a frequency.  A frequency will
+be represented by the @code{tone} object.  To turn the note into a tone, we will use the
+@code{note->tone} rewriter.  Tonart rewriters are not put into the context; instead, they
+add and remove objects from the context, in a context sensitive manner. 
+@linebreak[]
+@(my-bnf 
+   (list @nonterm{object}
+         @litchar{...}
+         @BNF-seq[open @code{tone} @nonterm{frequency} close])
+   (list @nonterm{rewriter}
+         @BNF-seq[open @code{note->tone} close])
+   (list @nonterm{realizer}
+         @litchar{...}
+         @BNF-seq[open @code{sound-realizer} close]))
 
 @codeblock{
-<freq>Hz ; Standard Syntax
-440Hz ; Example
-
-(tone <freq>) ; Tonart Syntax
-(tone 440)  ; Example
+  (realize (sound-realizer)
+    (@"@" [(interval [0 4]) (voice soprano)] 
+      (note c 6))
+    (note->tone))
 }
 
-A special property of how we perceive tones is: two tones that are double each
-other's frequency sound "almost the same" (are hard to tell apart).  This is why
-we can all sing the same songs together, even though we have different vocal
-ranges.
+Now we will add a harmony to this note.  We will express the harmony as a chord.
+@linebreak[]
+@(my-bnf 
+   (list @nonterm{object}
+         @litchar{...}
+         @BNF-seq[open @code{chord} @nonterm{pitch} @nonterm{accidental} @nonterm{quality} close])
+   (list @nonterm{rewriter}
+         @litchar{...}
+         @BNF-seq[open @code{chord->notes} @nonterm{octave} close]))
+@centered{------}
+@(examples
+  #:eval helper-eval
+  #:label #f
+  #:no-prompt
+  (realize (staff-realizer [300 150] [bass])
+    (|@| [(interval [0 4]) (voice harmony)]
+      (chord c 0 [M])
+      (chord->notes/simple 3))))
 
-@subsection{Notes}
+We have not yet discussed putting objects one after another in time.  We could of course use
+consecutive intervals.  However, this gets unwieldy.  We are instead going to establish a concept
+of a @emph{sequence} of notes.
+@linebreak[]
+@(my-bnf 
+   (list @nonterm{context}
+         @litchar{...}
+         @BNF-seq[open @code{seq} @kleenestar[@nonterm{number}] close])
+   (list @nonterm{coordinate}
+         @litchar{...}
+         @BNF-seq[open @code{index} @kleenestar[@nonterm{number}] close]))
+@linebreak[]
+This defines a new context.  This context is called @code{seq} and has one coordinate, @code{index},
+representing the position of an object in the context.  @code{seq} contexts can be embedded in music
+contexts, allowing us to express an ordered sequence of notes directly on a score, without 
+specifically giving lengths to the notes.
+@linebreak[]
+Next, we define syntax for rhythms, which are, for our purposes, a series of consecutive durations.  
+@linebreak[]
+@(my-bnf 
+  (list @nonterm{object}
+        @litchar{...}
+        @BNF-seq[open @code{rhythm} @kleenestar[@nonterm{number}] close])
+  (list @nonterm{rewriter}
+        @litchar{...}
+        @BNF-seq[open @code{apply-rhythm} close]))
+@linebreak[]
+Now we can do something more complex with the soprano.  
 
-For our purposes, notes are labels laid over top of tones, so that each note label
-corresponds to a tone of a certain frequency.  
-
+Note: Instead of writing,
 @codeblock{
-;; Standard Syntax
-<pitch-label><accidental><octave>
-Ab5 ; Example
+  (seq 
+    (@"@" [(index 0)] (note a 3)) 
+    (@"@" [(index 1)] (note b 3))
+    ...)} 
+I will write @code{(seq (notes [a 3] [b 3] ...))}.  
 
-;; Tonart Syntax
-(note <pitch-label> <accidental-number> <octave-number>)
-(note a -1 5) ; Example
-}
-
-Notes are given labels @tt{A1 B1 C1 D1 E1 F1 G1 A2 B2 C2 D2 ...},
-which, in that order, must have increasing corresponding frequencies.  C2 must
-have a frequency exactly double C1.  We call the distance between two notes an
-"interval" and this particular same-sounding, doubled-frequency interval an
-"octave".  Two notes an octave apart will always have the same _pitch-label_,
-just as in the above example.  The octave number is what will vary (C1, C2, C3,
-C4 etc.).  An expanded set of tones can be expressed as a raising or lowering of
-a note, which is done via an "accidental".  To raise a note, the symbol '#'
-(pronounced "sharp") is used.  To lower a note, the symbol 'b' (pronounced
-'flat') is used. The accidental is also preserved between octaves, and the
-pitch-label taken with the accidental is called the "pitch class".  For example, a
-raised C is written C#, each distinct pitch classes.  C# in the 4th octave is
-written C#4.  The C# an octave above C#4 is written C#5.  For clairty- C#4 and
-C#5 are in the same pitch class and that pitch class is C#.
-
-@subsection{Tuning}
-
-A tuning is a mapping of notes to tones.  In many cases, particularly keyboard
-tuning, this means mapping one octave of symbols- @tt{C #/b D #/b E F #/b G #/b
-A #/b B}- to reasonable frequencies, and finding all the others by doubling or
-halving those frequencies (transposing by octaves).
-
+Below, a melody, in the soprano, is bound to @code{melody}.
+The definition does not use @code{apply-rhythm}.  That is fine,
+as we will apply the rhythm at the end.  It is often best
+in Tonart to express the music by writing down all objects
+and doing a series of rewrites at the end.
+@(examples
+  #:eval helper-eval
+  #:label #f
+  #:no-prompt
+  (define-art melody
+    (|@| [(voice soprano)]
+      (seq (notes [c 0 5] [b -1 4] [a 0 4] 
+                  [b 0 4] [c 0 5]))
+      (rhythm 1.5 0.5 0.5 1.5 2))))
+Now, we supply a harmony.
+@(examples
+  #:eval helper-eval
+  #:label #f
+  #:no-prompt
+  (define-art harmony
+    (|@| [(voice harmony)]
+      (seq (chords [f 0 M] [c 0 M] [f 0 M] 
+                   [g 0 M] [c 0 M]))
+      (rhythm 1 1 1 1 2))))
+A very nice cadence.  To see it visualized:
+@(examples
+  #:eval helper-eval
+  #:label #f
+  #:no-prompt
+  (define-art song-notes 
+    melody harmony 
+    (apply-rhythm) (chord->notes/simple 3))
+  (realize 
+    (staff-realizer [300 280] [treble])
+    song-notes))
+To hear it:
 @codeblock{
-<tuning-name> ; Standard Syntax
-12tet ; Example
-
-(tuning <tuning-name>) ; Tonart Syntax
-(tuning 12tet) ; Example
+  (realize (sound-realizer) 
+    song-notes (note->tone))
 }
 
-Here is an artwork demonstrating notes being mapped to tones in two different tunings:
+@section{Finale}
 
-First we draw the notes we want to tune.
+Now we will try compiling a piece with a more obscure object.
+@linebreak[]
+@(my-bnf 
+   (list @nonterm{object}
+         @litchar{...}
+         @BNF-seq[open @code{function} @BNF-seq[open @nonterm{id} close] @nonterm{expr} close])
+   (list @nonterm{rewriter}
+         @litchar{...}
+         @BNF-seq-lines[
+           (list @BNF-seq[open @code{function->notes}])
+           (list @hspace[1] @BNF-seq[open @nonterm{number} @nonterm{number} close])
+           (list @hspace[1] @BNF-seq[open @nonterm{note} @nonterm{note} close close])]))
+@linebreak[]
+@code{function} is a mathematical function.
 
+@code{function->notes} has an interval and a note range, and applies to
+@code{function}s.  It requires a rhythm in the surrounding context of the
+function and a continuously defined harmony for the extent of the function.
+With those forms under those conditions, it produces a melody having the contour
+of the function, within the given note range, having the proper rhythm, and
+fitting within the harmony.
+
+Here is an example.  I will use @code{(uniform-rhythm 1/4)} as a shorthand for 
+@code{(rhythm 1/4 1/4 1/4 ...)}.
 @(examples
-    #:eval helper-eval
-    #:label #f
-    #:no-prompt
-
-    (define-art my-notes 
-      (seq (notes [c 0 4] [d 0 4] [e 0 4])))
-    (realize (draw-realizer [200 40]) my-notes))
-
-Next, we place the notes in two different @code{music} contexts with the two tunings we want to
-try. @code{namespace} is another type of context which is useful for certain things, though
-just being used for show here.  @code{@"name@"} is a shorthand for ascribing a @code{name} coordinate.
-
-@(examples
-    #:eval helper-eval
-    #:label #f
-    #:no-prompt
-
-    (define-art my-tunings
-      (namespace 
-        (name@ 12-tone-ET
-          (music (tuning 12tet) my-notes))
-        (name@ Just-Intonation
-          (music (tuning 5-limit) my-notes))))
-    (scale 1/2 (realize (draw-realizer [600 100]) my-tunings)))
-
-Finally, we run @code{note->tone}.  Because of the way we wrote this art,
-the code is slightly obfuscated with a few layers of @tt{rewrite-in} destructuring.
-@code{(delete tuning)} is done to declutter the resulting image.
-
-@(examples
-    #:eval helper-eval
-    #:label #f
-    #:no-prompt
-    (scale 1/2
-      (realize (draw-realizer [600 100])
-        my-tunings
-        (rewrite-in-namespace
-          (rewrite-in-music 
-            (rewrite-in-seq (note->tone))
-            (delete tuning))))))
-
-One interesting thing to note is how the Just Intoned result is represented by
-fractions, while the Equal Tempered result is represented by decimals.  This is 
-indirectly a result of the fact that Just Intonation is tuned with
-multiplication by whole number ratios, while Equal Temperament is tuned using
-multiplication by an irrational number.
-
-@subsection{Chords}
-
-Chords are an abstraction over combinations of notes, which often function like 
-a set of pitch classes.  For the purposes of this demo, our chord symbols will
-specify sets of 3 pitch classes, called triads.  
-
-@codeblock{
-;; Standard Syntax
-<pitch-label><accidental><quality-abbrev> 
-or 
-<pitch-class> <quality>
-;; Example
-F#m or F# minor
-
-;; Tonart Syntax
-(chord <pitch-label> <accidental-number> 
-       [<quality>])
-;; Example
-(chord f 1 [m])
-}
-
-Any number of notes can be in a chord, including repeats and octave
-transpositions.  Each note must be a member of one of the pitch classes
-corresponding to the chord.  Not all pitch classes from the set need be present
-for a chord to retain its identity.  The pitch label of the chord is called
-the "root" of the chord, and must be present.  The "quality" of the chord
-deals with the intervals between notes in the chord.  C major, CM, or simply C,
-has pitch classes C, E, and G.  C minor or Cm has pitch classes C, Eb, and G.
-These are the two chord qualities that will be used in the demo.
-
-Here is an example of chords being rewritten to notes.  
-
-@(examples
-    #:eval helper-eval
-    #:label #f
-    #:no-prompt
-
-    (define-art my-chords
-      (seq (chords [c 0 M] [f 0 m] [g 1 M])))
-    (realize (draw-realizer [200 40]) my-chords))
-
-Next we turn them into notes.  The particular choice of notes is, as mentioned,
-arbitrary.  The @code{chord->notes/simple} rewriter happens to stack the first
-three notes in the chord, ascenting from the given octave.
-
-@(examples
-    #:eval helper-eval
-    #:label #f
-    #:no-prompt
-
-    (realize (draw-realizer [300 50])
-      (music 
-        my-chords
-        (rewrite-in-seq (chord->notes/simple 4)))))
-
-@subsection{Keys and Degrees}
-
-A key in music is similar to a chord, being defined by a root pitch and a modality.
-
-@codeblock{
-;; Standard Syntax
-<pitch-class> <quality>
-;; Example
-F# minor
-
-;; Tonart Syntax
-(key <pitch-label> <accidental-number> <quality>)
-;; Example
-(key f 1 m)
-}
-
-The difference between the two is a key contains a number of different chords.  Keys are a
-broader description of a harmony, containing a large number of notes, intervals, chords, and
-even idioms which interact
-
-A degree or scale degree represents a pitch class, made relative to the root of a key.
-
-@codeblock{
-^<number> ; Standard Syntax
-^2 ; Example
-
-(^ <number>) ; Tonart Syntax
-(^ 2) ; Example
-}
-
-We will show the first four degrees of three different keys: C major, B-flat
-minor, and G-sharp major.
-
-@(examples
-    #:eval helper-eval
-    #:label #f
-    #:no-prompt
-
-  (define-art my-degrees
-    (i@ [0 12] 
-      (voice@ (alto)
-        (seq (^s 1 2 3 4 1 2 3 4 1 2 3 4)) 
-        (urhy* 1) (delete seq)))
-    (-- [4 (key c 0 M)] [4 (key b -1 m)] 
-        [4 (key g 1 M)]))
-  
-  (scale 1/2 
-    (realize (draw-realizer [600 80]) 
-      (music my-degrees))))
-
-@(examples
-   #:eval helper-eval
-   #:label #f
-   #:no-prompt
-
-   (scale 1/2
-     (realize (draw-realizer [600 80])
-       (music my-degrees (octave 4) 
-              (^->note) (delete octave)))))
-
-@subsection{Rhythm}
-
-Rhythm is the timing and accentuation of specific beats.  The
-Tonart rhythm object is a useful tool, but is very basic and only 
-captures the former.
-
-@codeblock{
-  (rhythm <number> ...) ; Tonart syntax
-  (rhythm 1 1 1/2 1/2 1 1) ; Example
-}
-
-The series of numbers in the rhythm object denotes lengths
-of time in beats.  A rewriter, @code{apply-rhythm}, can be
-used to place a sequence in time.
-
-@(examples
-   #:eval helper-eval
-   #:label #f
-   #:no-prompt
-  (define-art my-music 
-    (seq (notes [f 1 3] [b 0 3] [e 0 3] [c 1 3] 
-                [d 1 3] [e 0 3] [f 1 3]))
-    (voice@ (bass) 
-      (rhythm 2 1/2 1/2 1 1/4 1/4 3)))
-
-  (scale 1/2 
-    (realize (draw-realizer [600 100]) 
-      (music my-music)))
-  (scale 1/2 
-    (realize (draw-realizer [600 100]) 
-      (music my-music (apply-rhythm)))))
+  #:eval helper-eval
+  #:label #f
+  #:no-prompt
+  #;(realize (staff-realizer)
+    melody harmony
+    (apply-rhythm)
+    (|@| [(voice harmony) (interval [0 6])]
+      (function (x) (sin x))
+      (uniform-rhythm 0.25)
+      (function->notes [(- pi) pi] [(a 3) (a 4)]))))
