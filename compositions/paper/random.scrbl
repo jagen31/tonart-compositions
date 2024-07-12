@@ -990,3 +990,30 @@ used to place a sequence in time.
   (scale 1/2 
     (realize (draw-realizer [600 100]) 
       (music my-music (apply-rhythm)))))
+
+@title{Related Works}
+ 
+Tonart is written in Racket, which is an extensible language itself.  Tonart is
+a syntactic abstraction in Racket, meaning it runs entirely in the compiler.
+Tonart uses the module system of Racket to require and provide Tonart constructs
+as libraries.  Tonart's rewriters are implemented using Racket's syntax objects,
+manipulating them with existing syntax libraries, such as @code{syntax-parse}.
+
+Euterpea is a music language written in Haskell, which allows for manipulating music programmatically.
+The Euterpea model is based on a binary tree representation of music, composing music using parallel
+and sequential constructors.  This is a different approach from Tonart, and while it has
+myriad benefits and some uses in music theory, it does suffer from the drawback of having
+many representations for the same music.
+
+Humdrum is a music analysis language.  Humdrum has a similar idea to Tonart, of
+re-representing musical object using transformations.
+Humdrum has a special syntax which amounts to a spreadsheet containing notations for
+different musical objects.  Notes, tones, chords, scale degrees, any
+representation, can be included adjacent to one another in rows.  Adjacency indicates they
+occur at the same time. Unix command line tools and hand rolled tools are used
+to search and manipulate the document, taking advantage of the structure.  This
+structure, however, does not compose within itself.  It is difficult to
+represent more sophisticated equalities.  The language is not intended for
+composition, either.
+
+@acmJournal{Proceedings of the 12th ACM SIGPLAN International Workshop on Functional Art, Music, Modelling, And Design}

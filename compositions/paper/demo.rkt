@@ -1,17 +1,35 @@
 #lang racket
 
-(require tonart tonart/private/common-practice/transform "../graph.rkt" "../tala/main.rkt" (for-syntax racket/math))
+(require tonart (prefix-in ta: (only-in tonart staff-realizer)) (for-syntax syntax/parse racket/math))
+(provide (all-defined-out) (for-syntax (all-defined-out)))
 
-(define-art-object (hymn-tune [name]))
-(define-art-object (taal [name]))
+(define-art-realizer staff-realizer
+  (λ (stx)
+    (syntax-parse stx
+      [(_ [w h])
+       #:with soprano (datum->syntax stx 'soprano)
+       #:with countermelody (datum->syntax stx 'countermelody)
+       #:with accomp (datum->syntax stx 'accomp)
+       #`(realize (ta:staff-realizer [w h] 
+                    {[soprano treble] [countermelody treble] [accomp bass]})
+           #,@(current-ctxt))])))
+                  
+(define-art-rewriter chord->notes
+  (λ (stx)
+    (syntax-parse stx
+      [(_ n) #'(chord->notes/simple n)])))
 
-(define-art cantus picardy-^s picardy-rhythm (apply-rhythm))
 
-(define-art harmony 
-  (transforms [S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [P S] [R] [R] [N]))
-
-(define-art descant-fun
-  (function (x) (+ (sin x) (sin (* 2 x)))))
-
-(define-art descant
-  (i@ [0 80] (loop 8 descant-fun) (loop 7 arachartal) (expand-loop)) (function->image pi (- pi)))
+(define-art-rewriter function->notes
+   (λ (stx)
+     (syntax-parse stx
+       [(_ [l h] [nl hl])
+        (qq-art stx
+          (context
+            (function->image l h)
+            (image->point-set)
+            (rhythm->holes)
+            (chord->scalar-note-seq nl hl)
+            (fill-holes-from-points)
+            (delete point-set)
+            (seq-ref)))])))

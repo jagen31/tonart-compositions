@@ -2,19 +2,24 @@
 @require{references.rkt}
 @require[scriblib/footnote]
 @require[(except-in scribble/manual index)
+         scribble-math
          scribble-abbrevs/manual (for-label tonart)
          (except-in scribble/eval examples)
          scribble/example
          scribble/bnf
          (for-syntax racket/base syntax/parse)]
 
+@define-footnote[racket-note make-racket-note]
+@define-footnote[musescore-note make-musescore-note]
+
 @title{Demo}
  
-@(define-syntax chord->notes (make-rename-transformer #'chord->notes/simple))
-
 @(define helper-eval (make-base-eval))
 @interaction-eval[#:eval helper-eval
-                  (require art/sequence/ravel tonart 2htdp/image)]
+                  (require art/sequence/ravel (except-in tonart staff-realizer) 2htdp/image "demo.rkt"
+                           (for-syntax racket/math racket/base syntax/parse))
+
+       ]
 
 @(define-syntax (my-bnf stx)
    (syntax-parse stx
@@ -27,13 +32,27 @@
 
 @section{Introduction}
 
-We begin this demo by exploring Tonart's syntax.  Tonart is extensible at several points.  To
-reflect this, we'll build our Tonart a few forms at a time.
+This demo is intended to show how Tonart can be used for practical composition
+with a score containing abstract music objects.  Notation softwares such as
+MuseScore@musescore-note{https://musescore.org/en} offer a score interface and
+many surface level transformations over notes and attributes of notes.  However,
+they fail to provide operations over objects like chords, scale degrees, and
+voice leadings.  Existing computer music libraries such as
+Euterpea@~cite[euterpea-2014] provide these operations or the means to build
+them, but do not provide them within a score-like interface.  A score-based DSL
+is fundamental to leveraging existing knowledge and skills with score notation,
+a centuries old medium.
+
+@make-musescore-note[]
+
+The demonstration will begin with only the base Tonart syntax.  We will
+gradually add more syntaxes as we need them in our composition.  We will show
+the score and play the audio output of our composition, at each step.
 
 @section{Tonart Syntax}
 
-We begin with basic Tonart syntax.  The undefined nonterminals are extension points and will
-progessively defined throughout the demo.
+Below is the base Tonart syntax.  The undefined nonterminals are extension points which will be
+elaborated as we progress through the demo.
 @linebreak[]
 @(my-bnf
    (list @nonterm{form}
@@ -42,21 +61,21 @@ progessively defined throughout the demo.
          @nonterm{rewriter}
          @nonterm{context}
          @BNF-seq-lines[
-           (list @BNF-seq[open @code{@"@"} @BNF-seq[open @kleenestar[@nonterm{coord} close] close]
-                 @hspace[1] @BNF-seq[@kleenestar[@nonterm{form}] close]])])
+           (list @BNF-seq[open @code{@"@"} @BNF-seq[open @kleenestar[@nonterm{coord}] close]
+                 @BNF-seq[@kleenestar[@nonterm{form}] close]])])
 
    (list @nonterm{program}
          @BNF-seq[open @code{define-art} @nonterm{art-id} @kleenestar[@nonterm{form}] close]
          @BNF-seq-lines[
            (list @BNF-seq[open @code{realize} @nonterm{realizer} @kleenestar[@nonterm{form}] close])]))
 @linebreak[]
-A context is a coordinate structure.  Tonart's primary coordinate structure is called @code{music}.
+A @emph{context} is a coordinate structure.  Tonart's primary coordinate structure is called @code{music}.
 @linebreak[]
 @(my-bnf 
   (list @nonterm{context}
         @BNF-seq[open @code{music} @kleenestar[@nonterm{<form>}] close]))
 @linebreak[]
-@code{music} has two coordinates,
+Music has two coordinates,
 @linebreak[]
 @(my-bnf
    (list @nonterm{coordinate}
@@ -64,35 +83,46 @@ A context is a coordinate structure.  Tonart's primary coordinate structure is c
          @BNF-seq[open @code{voice} @kleenestar[@nonterm{id}] close]))
 @linebreak[]
 which are orthogonal and represent the horizontal (time) and vertical (voice)
-dimensions of a physical score.
+dimensions of a physical score.  
 
 The @"@" form is used to embed objects into a context at given coordinates.
 
+Tonart is compiled into Racket@racket-note{Tonart is written as an embedded DSL in Racket.
+It is a syntactic abstraction, running entirely at compile time, utilizing Racket's module system
+to implement its own extension mechanisms and libraries.@~cite[ywiw-icfp-2002]} by @emph{realizers}.  
+
+Note that we will not actually write out the @code{music} form in 
+this demo, as the realizers we are using treat their toplevel forms as music implicitly.
+
+@make-racket-note[]
+
 @section{Composing In Tonart}
 
-Tonart is compiled into Racket by @emph{realizers}.  We will begin composing with only one object
-and one realizer.
+We will begin composing with only one object and one realizer.
 @linebreak[]
 @(my-bnf 
   (list @nonterm{object}
         @BNF-seq[open @code{note} @nonterm{pitch} @nonterm{accidental} @nonterm{octave} close])
   (list @nonterm{realizer}
-        @BNF-seq[open @code{staff-realizer} @nonterm{clef} close]))
+        @BNF-seq-lines[
+          (list @BNF-seq[open @code{staff-realizer}])
+          (list @hspace[1] @BNF-seq[open @nonterm{number} @nonterm{number} close] close)]))
 @centered{------}
 @(examples
   #:eval helper-eval
   #:label #f
   #:no-prompt
-  (realize (staff-realizer [300 150] [treble])
+  (realize (staff-realizer [300 150])
     (|@| [(interval [0 4]) (voice soprano)]
       (note c 0 5))))
 This is a note called @tt{C5}, or, C in the fifth octave.  It is sung by the soprano voice, for four 
 beats.
 
 To play this note from the computer, we will convert it into a frequency.  A frequency will
-be represented by the @code{tone} object.  To turn the note into a tone, we will use the
-@code{note->tone} rewriter.  Tonart rewriters are not put into the context; instead, they
-add and remove objects from the context, in a context sensitive manner. 
+be represented by the @code{tone} object.  To turn notes into tones, we will use
+a straightforward rewriter called @code{note->tone}. Tonart rewriters are not
+composed into the context like objects; instead, they transform the context by
+adding, deleting, and modifying existing objects.
 @linebreak[]
 @(my-bnf 
    (list @nonterm{object}
@@ -103,20 +133,21 @@ add and remove objects from the context, in a context sensitive manner.
    (list @nonterm{realizer}
          @litchar{...}
          @BNF-seq[open @code{sound-realizer} close]))
-
+@centered{------}
 @codeblock{
   (realize (sound-realizer)
     (@"@" [(interval [0 4]) (voice soprano)] 
-      (note c 6))
+      (note c 0 6))
     (note->tone))
 }
-
 Now we will add a harmony to this note.  We will express the harmony as a chord.
 @linebreak[]
 @(my-bnf 
    (list @nonterm{object}
          @litchar{...}
-         @BNF-seq[open @code{chord} @nonterm{pitch} @nonterm{accidental} @nonterm{quality} close])
+         @BNF-seq-lines[
+            (list @BNF-seq[open @code{chord} @nonterm{pitch} @nonterm{accidental}])
+            (list @hspace[1] @BNF-seq[open @nonterm{quality} close] close)])
    (list @nonterm{rewriter}
          @litchar{...}
          @BNF-seq[open @code{chord->notes} @nonterm{octave} close]))
@@ -125,27 +156,27 @@ Now we will add a harmony to this note.  We will express the harmony as a chord.
   #:eval helper-eval
   #:label #f
   #:no-prompt
-  (realize (staff-realizer [300 150] [bass])
-    (|@| [(interval [0 4]) (voice harmony)]
+  (realize (staff-realizer [300 150])
+    (|@| [(interval [0 4]) (voice accomp)]
       (chord c 0 [M])
-      (chord->notes/simple 3))))
+      (chord->notes 3))))
 
-We have not yet discussed putting objects one after another in time.  We could of course use
-consecutive intervals.  However, this gets unwieldy.  We are instead going to establish a concept
-of a @emph{sequence} of notes.
+We have not yet discussed putting objects one after another in time.  We could
+of course use consecutive intervals.  However, this gets unwieldy.  We are
+instead going to establish a concept of a @emph{sequence} of notes.
 @linebreak[]
 @(my-bnf 
    (list @nonterm{context}
          @litchar{...}
-         @BNF-seq[open @code{seq} @kleenestar[@nonterm{number}] close])
+         @BNF-seq[open @code{seq} @kleenestar[@nonterm{form}] close])
    (list @nonterm{coordinate}
          @litchar{...}
          @BNF-seq[open @code{index} @kleenestar[@nonterm{number}] close]))
 @linebreak[]
-This defines a new context.  This context is called @code{seq} and has one coordinate, @code{index},
+We define a new context.  This context is called @code{seq} and has one coordinate, @code{index},
 representing the position of an object in the context.  @code{seq} contexts can be embedded in music
-contexts, allowing us to express an ordered sequence of notes directly on a score, without 
-specifically giving lengths to the notes.
+contexts, allowing us to express an ordered sequence directly in a score, without 
+giving specific lengths to the notes or other objects it contains.
 @linebreak[]
 Next, we define syntax for rhythms, which are, for our purposes, a series of consecutive durations.  
 @linebreak[]
@@ -162,16 +193,16 @@ Now we can do something more complex with the soprano.
 Note: Instead of writing,
 @codeblock{
   (seq 
-    (@"@" [(index 0)] (note a 3)) 
-    (@"@" [(index 1)] (note b 3))
+    (@"@" [(index 0)] (note a 0 3)) 
+    (@"@" [(index 1)] (note b 0 3))
     ...)} 
-I will write @code{(seq (notes [a 3] [b 3] ...))}.  
+I will write @code{(seq (notes [a 0 3] [b 0 3] ...))}.  
 
 Below, a melody, in the soprano, is bound to @code{melody}.
-The definition does not use @code{apply-rhythm}.  That is fine,
-as we will apply the rhythm at the end.  It is often best
-in Tonart to express the music by writing down all objects
-and doing a series of rewrites at the end.
+The definition does not rewrite with @code{apply-rhythm} immediately.  That is
+fine, as we will apply the rhythm at the end.  It is often best in Tonart to
+express music declaratively, by writing down all objects first and saving the
+rewriting for the end.
 @(examples
   #:eval helper-eval
   #:label #f
@@ -180,27 +211,29 @@ and doing a series of rewrites at the end.
     (|@| [(voice soprano)]
       (seq (notes [c 0 5] [b -1 4] [a 0 4] 
                   [b 0 4] [c 0 5]))
-      (rhythm 1.5 0.5 0.5 1.5 2))))
-Now, we supply a harmony.
+      (rhythm 3/2 1/2 1/2 3/2 2))))
+Now, we supply a harmony and harmonic rhythm, which the accompaniment will outline. 
 @(examples
   #:eval helper-eval
   #:label #f
   #:no-prompt
   (define-art harmony
-    (|@| [(voice harmony)]
       (seq (chords [f 0 M] [c 0 M] [f 0 M] 
                    [g 0 M] [c 0 M]))
-      (rhythm 1 1 1 1 2))))
+      (rhythm 1 1 1 1 2))
+  (define-art accomp
+    (|@| [(voice accomp)]
+      harmony)))
 A very nice cadence.  To see it visualized:
 @(examples
   #:eval helper-eval
   #:label #f
   #:no-prompt
   (define-art song-notes 
-    melody harmony 
-    (apply-rhythm) (chord->notes/simple 3))
+    melody accomp
+    (apply-rhythm) (chord->notes 3))
   (realize 
-    (staff-realizer [300 280] [treble])
+    (staff-realizer [300 300])
     song-notes))
 To hear it:
 @codeblock{
@@ -210,7 +243,7 @@ To hear it:
 
 @section{Finale}
 
-Now we will try compiling a piece with a more obscure object.
+To finish off, we will try adding a more obscure object to our composition.
 @linebreak[]
 @(my-bnf 
    (list @nonterm{object}
@@ -225,23 +258,22 @@ Now we will try compiling a piece with a more obscure object.
 @linebreak[]
 @code{function} is a mathematical function.
 
-@code{function->notes} has an interval and a note range, and applies to
-@code{function}s.  It requires a rhythm in the surrounding context of the
-function and a continuously defined harmony for the extent of the function.
-With those forms under those conditions, it produces a melody having the contour
-of the function, within the given note range, having the proper rhythm, and
-fitting within the harmony.
+@code{function->notes} applies to functions, and it creates a melody that fits within the surrounding 
+harmony and matches the contour of the function.
 
-Here is an example.  I will use @code{(uniform-rhythm 1/4)} as a shorthand for 
-@code{(rhythm 1/4 1/4 1/4 ...)}.
+Here is the finished work. I will use @code{(uniform-rhythm 1/4)} as a shorthand for 
+@code{(rhythm 1/4 1/4 1/4 ...)}.  The function is @${sin(x)} over @${(-\pi,\pi)}.
 @(examples
   #:eval helper-eval
   #:label #f
   #:no-prompt
-  #;(realize (staff-realizer)
-    melody harmony
-    (apply-rhythm)
-    (|@| [(voice harmony) (interval [0 6])]
-      (function (x) (sin x))
-      (uniform-rhythm 0.25)
+  (realize (staff-realizer [300 450])
+    song-notes
+    (|@| [(voice countermelody)]
+      harmony (apply-rhythm)
+      (|@| [(interval [0 5])]
+        (function (x) (sin x))
+        (uniform-rhythm 1/4))
+      (|@| [(interval [5 6])]
+        (note e 0 4))
       (function->notes [(- pi) pi] [(a 3) (a 4)]))))

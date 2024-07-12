@@ -13,3 +13,7 @@
 
 @; optional: set the author names in the page headers
 @elem[#:style "Sshortauthors"]{J. Gentner}
+
+@(acmConference"FARM '24" "September 2, 2024" "Milan, Italy")
+
+@generate-bibliography[#:sec-title "References"]
