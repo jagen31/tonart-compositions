@@ -141,15 +141,18 @@
     (voice@ [soprano]
             (chord c 0 [m])
             (loop 2 (rhythm 1.25 0.25 0.25 0.25)) (expand-loop)
-            (chord->scalar-note-seq [a 0 4] [a 0 5]))
+            (note-range [a 0 4] [a 0 5])
+            (chord->scalar-note-seq))
     (voice@ [alto]
             (chord c 0 [m])
             (loop 2 (rhythm .25 0.25 0.25 1)) (expand-loop)
-            (chord->scalar-note-seq [a 0 3] [a 0 4]))
+            (note-range [a 0 3] [a 0 4])
+            (chord->scalar-note-seq))
     (voice@ [tenor]
             (chord c 0 [m])
             (urhy 1/4)
-            (chord->scalar-note-seq [a 0 2] [a 0 3])))
+            (note-range [a 0 2] [a 0 3])
+            (chord->scalar-note-seq)))
   
   (rhythm->holes)
 

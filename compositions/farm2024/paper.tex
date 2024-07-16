@@ -1,4 +1,4 @@
-\documentclass[review=true, 10pt, sigplan]{acmart}
+\documentclass[10pt, sigplan]{acmart}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 
@@ -678,7 +678,11 @@ These will eventually be compiled into a digital score representation, as well a
 computer performance.  We will add in an especially abstract object at the end,
 and use our creativity to compile it into something performable.\end{abstract}
 
-\acmConference{FARM {'}24}{September 2, 2024}{Milan, Italy}\titleAndEmptyVersionAndAuthors{Demo: Composable Compositions with Tonart}{}{\SNumberOfAuthors{1}\SAuthor{\SAuthorinfo{Jared Gentner}{}{\SAuthorPlace{}}{\SAuthorEmail{jagen315@gmail.com}}}}
+\acmConference{FARM {'}24}{September 2, 2024}{Milan, Italy}
+
+\acmDOI{10.1145/3677996.3678294}
+
+\acmISBN{}\titleAndEmptyVersionAndAuthors{Demo: Composable Compositions with Tonart}{}{\SNumberOfAuthors{1}\SAuthor{\SAuthorinfo{Jared Gentner}{}{\SAuthorPlace{\city{Boston}\state{MA}\country{USA}}}{\SAuthorEmail{jagen315@gmail.com}}}}
 \label{t:x28part_x22Demox5fx5fComposablex5fCompositionsx5fwithx5fTonartx22x29}
 
 
@@ -688,6 +692,10 @@ and use our creativity to compile it into something performable.\end{abstract}
 \Sshortauthors{J. Gentner}
 
 
+
+\noindent 
+
+\noindent 
 
 \sectionNewpage
 
@@ -740,7 +748,7 @@ elaborated as we progress through the demo.
 \hbox{ } &
 \hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}{\Stttextbar}\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}}} &
 \begin{tabular}[t]{@{}l@{}}
-\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{@}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{coord}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{form}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}}\end{tabular} \\
+\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{@}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{coordinate}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{form}$\rangle$}\textrm{*}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}}\end{tabular} \\
 \hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
 \hbox{\textrm{$\langle$\textit{program}$\rangle$}} &
 \hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}{\hbox{\texttt{:}}}{\hbox{\texttt{:}}}=\mbox{\hphantom{\Scribtexttt{x}}}}} &
@@ -785,7 +793,7 @@ Music has two coordinates,
 which are orthogonal and represent the horizontal (time) and vertical (voice)
 dimensions of a physical score.
 
-The @ form is used to embed objects into a context at given coordinates.
+The \RktSym{\badlink{\RktValLink{@}}}\RktMeta{} form is used to embed objects into a context at given coordinates.
 
 Tonart is compiled into Racket\Footnote{\FootnoteRef{\textsuper{\hyperref[t:x28x7ccounterx2dx28x29x7c_x23x28structx3ageneratedx2dtagx29x29]{1}}}\FootnoteContent{Tonart is written as an embedded DSL in Racket.
 It is a syntactic abstraction, running entirely at compile time, utilizing Racket{'}s module system
@@ -814,13 +822,11 @@ We will begin composing with only one object and one realizer.
 \hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
 \hbox{\textrm{$\langle$\textit{realizer}$\rangle$}} &
 \hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}{\hbox{\texttt{:}}}{\hbox{\texttt{:}}}=\mbox{\hphantom{\Scribtexttt{x}}}}} &
-\begin{tabular}[t]{@{}l@{}}
-\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\RktMeta{}} \\
-\hbox{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}}\end{tabular}\end{bigtabular}
+\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}}\end{bigtabular}
 
 \noindent \begin{SCentered}{---}{---}\end{SCentered}
 
-\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{300}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{150}\RktPn{]}\RktPn{)}
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\RktPn{)}
 
 \mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{interval}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{voice}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{soprano}\RktPn{)}\RktPn{]}
 
@@ -835,7 +841,9 @@ To play this note from the computer, we will convert it into a frequency.  A fre
 be represented by the \RktSym{\badlink{\RktValLink{tone}}}\RktMeta{} object.  To turn notes into tones, we will use
 a straightforward rewriter called \RktSym{\badlink{\RktValLink{note{-}{\Stttextmore}tone}}}\RktMeta{}. Tonart rewriters are not
 composed into the context like objects; instead, they transform the context by
-adding, deleting, and modifying existing objects.
+adding, deleting, and modifying existing objects.  Forms such as
+\RktSym{\badlink{\RktValLink{define{-}art}}}\RktMeta{}, \RktSym{\badlink{\RktValLink{realize}}}\RktMeta{}, and \RktSym{\badlink{\RktValLink{@}}}\RktMeta{} evaluate their subforms from
+top to bottom, applying rewriters only to the objects denoted above them.
 \hspace*{\fill}\\
 
 
@@ -869,7 +877,7 @@ adding, deleting, and modifying existing objects.
 
 \RktMeta{}\mbox{\hphantom{\Scribtexttt{xx}}}\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{interval}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktVal{0}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{4}\RktPn{]}\RktPn{)}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{voice}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{soprano}\RktPn{)}\RktPn{]}\RktMeta{}
 
-\RktMeta{}\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{c}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{0}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{6}\RktPn{)}\RktPn{)}\RktMeta{}
+\RktMeta{}\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{c}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{0}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{5}\RktPn{)}\RktPn{)}\RktMeta{}
 
 \RktMeta{}\mbox{\hphantom{\Scribtexttt{xx}}}\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{note{-}{\Stttextmore}tone}}}\RktPn{)}\RktPn{)}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
@@ -901,7 +909,12 @@ adding, deleting, and modifying existing objects.
 
 \noindent \begin{SCentered}{---}{---}\end{SCentered}
 
-\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{300}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{150}\RktPn{]}\RktPn{)}
+\noindent For this demo, \RktSym{chord{-}{\Stttextmore}notes}\RktMeta{} simply writes in the first three
+possible notes for each chord within its bounds, creating so{-}called {`}snowman{'} triads.  The number
+specifies which octave the chords will start in.
+
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\RktPn{)}
 
 \mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{interval}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{voice}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{accomp}\RktPn{)}\RktPn{]}
 
@@ -942,7 +955,7 @@ We define a new context.  This context is called \RktSym{\badlink{\RktValLink{se
 representing the position of an object in the context.  \RktSym{\badlink{\RktValLink{seq}}}\RktMeta{} contexts can be embedded in music
 contexts, allowing us to express an ordered sequence directly in a score, without
 giving specific lengths to the notes or other objects it contains.
-\hspace*{\fill}\\
+
 Next, we define syntax for rhythms, which are, for our purposes, a series of consecutive durations.
 \hspace*{\fill}\\
 
@@ -969,7 +982,7 @@ Next, we define syntax for rhythms, which are, for our purposes, a series of con
 
 \noindent \hspace*{\fill}\\
 Now we can do something more complex with the soprano.
-
+\hspace*{\fill}\\
 Note: Instead of writing,
 
 
@@ -982,26 +995,18 @@ Note: Instead of writing,
 \RktMeta{}\mbox{\hphantom{\Scribtexttt{xx}}}\RktMeta{}\RktSym{{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}}\RktPn{)}\RktMeta{}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
 \noindent I will write \RktPn{(}\RktSym{\badlink{\RktValLink{seq}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{(}\RktSym{\badlink{\RktValLink{notes}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktSym{a}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{0}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{3}\RktPn{]}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktPn{[}\RktSym{b}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{0}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{3}\RktPn{]}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}}\RktPn{)}\RktPn{)}\RktMeta{}.
-
-Below, a melody, in the soprano, is bound to \RktSym{melody}\RktMeta{}.
-The definition does not rewrite with \RktSym{\badlink{\RktValLink{apply{-}rhythm}}}\RktMeta{} immediately.  That is
-fine, as we will apply the rhythm at the end.  It is often best in Tonart to
-express music declaratively, by writing down all objects first and saving the
-rewriting for the end.
-
+\hspace*{\fill}\\
+Below, a melody is bound.
 
 \begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{melody}
 
-\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{voice}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{soprano}\RktPn{)}\RktPn{]}
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{notes}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{5}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{b}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{\mbox{{-}1}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}
 
-\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{seq}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{notes}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{5}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{b}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{\mbox{{-}1}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}
+\mbox{\hphantom{\Scribtexttt{xxxxxxxxxxxxxx}}}\RktPn{[}\RktSym{b}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{5}\RktPn{]}\RktPn{)}\RktPn{)}
 
-\mbox{\hphantom{\Scribtexttt{xxxxxxxxxxxxxxxx}}}\RktPn{[}\RktSym{b}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{5}\RktPn{]}\RktPn{)}\RktPn{)}
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
-\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3/2}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
-
-\noindent Now, we supply a harmony and harmonic rhythm, which the accompaniment will outline.
-
+Now, we supply a harmony, which the accompaniment will outline.
 
 \begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{harmony}
 
@@ -1009,26 +1014,26 @@ rewriting for the end.
 
 \mbox{\hphantom{\Scribtexttt{xxxxxxxxxxxxxxxxx}}}\RktPn{[}\RktSym{g}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{M}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{M}\RktPn{]}\RktPn{)}\RktPn{)}
 
-\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{2}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
-\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{accomp}
-
-\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{voice}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{accomp}\RktPn{)}\RktPn{]}
-
-\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktSym{harmony}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
-
-\noindent A very nice cadence.  To see it visualized:
+\noindent We compose them together, and rewrite the piece into notes.
 
 
 \begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{define{-}art}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{song{-}notes}
 
-\mbox{\hphantom{\Scribtexttt{xx}}}\RktSym{melody}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{accomp}
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{voice@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{soprano}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{melody}\RktPn{)}
 
-\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{apply{-}rhythm}}}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{chord{-}{\Stttextmore}notes}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{voice@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{accomp}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{harmony}\RktPn{)}
 
-\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}
+\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{apply{-}rhythm}}}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{chord{-}{\Stttextmore}notes}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
-\mbox{\hphantom{\Scribtexttt{xx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{300}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{300}\RktPn{]}\RktPn{)}
+Note that the use of \RktSym{\badlink{\RktValLink{apply{-}rhythm}}}\RktMeta{} above applies both the rhythm of the
+melody, and the harmonic rhythm of the harmony.
+\hspace*{\fill}\\
+To see it visualized:
+
+
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\RktPn{)}
 
 \mbox{\hphantom{\Scribtexttt{xx}}}\RktSym{song{-}notes}\RktPn{)}\end{SingleColumn}\end{RktBlk}
 
@@ -1080,7 +1085,7 @@ Here is the finished work. I will use \RktPn{(}\RktSym{\badlink{\RktValLink{unif
 \RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}}\RktPn{)}\RktMeta{}.  The function is \texMathInline{sin(x)} over \texMathInline{(-\pi,\pi)}.
 
 
-\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{300}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{450}\RktPn{]}\RktPn{)}
+\begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\RktPn{)}
 
 \mbox{\hphantom{\Scribtexttt{xx}}}\RktSym{song{-}notes}
 
@@ -1094,13 +1099,11 @@ Here is the finished work. I will use \RktPn{(}\RktSym{\badlink{\RktValLink{unif
 
 \mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{uniform{-}rhythm}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{1/4}\RktPn{)}\RktPn{)}
 
-\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{interval}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{5}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{6}\RktPn{]}\RktPn{)}\RktPn{]}
-
-\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{e}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{)}
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{interval}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{5}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{6}\RktPn{]}\RktPn{)}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{e}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{)}
 
 \mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{function{-}{\Stttextmore}notes}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\mbox{{-}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{pi}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{pi}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{]}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
 
-\raisebox{-0.19999999999998863bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_4.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\raisebox{-0.7999999999999545bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_4.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
 \sectionNewpage
 
