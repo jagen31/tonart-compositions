@@ -48,9 +48,20 @@
     (insert-rests)
     (measure->mxml-measure) #:capture [time-sig]))
 
+(define-art-rewriter chuck-postlude
+  (lambda (stx)
+    #'(context 
+        (x-picardy-tune) 
+        (sound-map) 
+        (^->note) (note->midi)  (volume 5) 
+        (voice@ (one) (channel 1)) (voice@ (two) (channel 2)) 
+        (voice@ (three) (channel 3)) 
+        (voice@ (four) (channel 1)) (voice@ (five) (channel 1)) 
+        (midi->full-midi) (tempo 120) (apply-tempo) (d/dt))))
+
 #;(realize (draw-realizer [800 200]) (music the-piece))
 
-(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
+#;(rs-write (realize (music-rsound-realizer) the-piece-rsound) "picardy.wav")
 
 #;(displayln (realize (linuxsampler-realizer) the-piece-lsampler)
            (open-output-file "picardy.cpp" #:exists 'replace))

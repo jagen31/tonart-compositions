@@ -678,12 +678,20 @@ These will eventually be compiled into a digital score representation, as well a
 computer performance.  We will add in an especially abstract object at the end,
 and use our creativity to compile it into something performable.\end{abstract}
 
+\keywords{Music}
+
 \acmConference{FARM {'}24}{September 2, 2024}{Milan, Italy}
 
 \acmDOI{10.1145/3677996.3678294}
 
-\acmISBN{}\titleAndEmptyVersionAndAuthors{Demo: Composable Compositions with Tonart}{}{\SNumberOfAuthors{1}\SAuthor{\SAuthorinfo{Jared Gentner}{}{\SAuthorPlace{\city{Boston}\state{MA}\country{USA}}}{\SAuthorEmail{jagen315@gmail.com}}}}
+\acmISBN{}
+
+\SccsdescNumber{500}{General and reference~General conference proceedings}
+
+\SccsdescNumber{500}{Applied computing~Sound and music computing}\titleAndEmptyVersionAndAuthors{Demo: Composable Compositions with Tonart}{}{\SNumberOfAuthors{1}\SAuthor{\SAuthorinfo{Jared Gentner}{}{\SAuthorPlace{\city{Boston}\state{MA}\country{USA}}}{\SAuthorEmail{jagen315@gmail.com}}}}
 \label{t:x28part_x22Demox5fx5fComposablex5fCompositionsx5fwithx5fTonartx22x29}
+
+
 
 
 
@@ -692,6 +700,10 @@ and use our creativity to compile it into something performable.\end{abstract}
 \Sshortauthors{J. Gentner}
 
 
+
+\noindent 
+
+\noindent 
 
 \noindent 
 
@@ -783,7 +795,9 @@ Music has two coordinates,
 \hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
 \hbox{\textrm{$\langle$\textit{coordinate}$\rangle$}} &
 \hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}{\hbox{\texttt{:}}}{\hbox{\texttt{:}}}=\mbox{\hphantom{\Scribtexttt{x}}}}} &
-\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{interval}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}} \\
+\begin{tabular}[t]{@{}l@{}}
+\hbox{\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{\badlink{\RktValLink{interval}}}\RktMeta{}} \\
+\hbox{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{(}}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\textrm{$\langle$\textit{number}$\rangle$}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}\mbox{\hphantom{\Scribtexttt{x}}}\RktInBG{\RktIn{)}}}\end{tabular} \\
 \hbox{\mbox{\hphantom{\Scribtexttt{x}}}} &
 \hbox{ } &
 \hbox{\Scribtexttt{\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}{\Stttextbar}\mbox{\hphantom{\Scribtexttt{x}}}\mbox{\hphantom{\Scribtexttt{x}}}}} &
@@ -832,7 +846,7 @@ We will begin composing with only one object and one realizer.
 
 \mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{c}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{5}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
 
-\raisebox{-0.19999999999998863bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\raisebox{-0.19999999999998863bp}{\makebox[232.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
 \noindent This is a note called \Scribtexttt{C5}, or, C in the fifth octave.  It is sung by the soprano voice, for four
 beats.
@@ -922,7 +936,7 @@ specifies which octave the chords will start in.
 
 \mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{chord{-}{\Stttextmore}notes}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
 
-\raisebox{-0.19999999999998863bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_2.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\raisebox{-0.19999999999998863bp}{\makebox[232.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_2.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
 We have not yet discussed putting objects one after another in time.  We could
 of course use consecutive intervals.  However, this gets unwieldy.  We are
@@ -1037,7 +1051,7 @@ To see it visualized:
 
 \mbox{\hphantom{\Scribtexttt{xx}}}\RktSym{song{-}notes}\RktPn{)}\end{SingleColumn}\end{RktBlk}
 
-\raisebox{-0.19999999999998863bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_3.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\raisebox{-0.19999999999998863bp}{\makebox[232.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_3.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
 \noindent To hear it:
 
@@ -1081,8 +1095,8 @@ To finish off, we will try adding a more obscure object to our composition.
 \RktSym{function{-}{\Stttextmore}notes}\RktMeta{} applies to functions, and it creates a melody that fits within the surrounding
 harmony and matches the contour of the function.
 
-Here is the finished work. I will use \RktPn{(}\RktSym{\badlink{\RktValLink{uniform{-}rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktPn{)}\RktMeta{} as a shorthand for
-\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}}\RktPn{)}\RktMeta{}.  The function is \texMathInline{sin(x)} over \texMathInline{(-\pi,\pi)}.
+Here is the finished work.\hspace*{\fill}\\I will use \RktPn{(}\RktSym{\badlink{\RktValLink{uniform{-}rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktPn{)}\RktMeta{} as a shorthand for
+\hspace*{\fill}\\\RktPn{(}\RktSym{\badlink{\RktValLink{rhythm}}}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktVal{1/4}\RktMeta{}\mbox{\hphantom{\Scribtexttt{x}}}\RktMeta{}\RktSym{{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}{\hbox{\texttt{.}}}}\RktPn{)}\RktMeta{}.\hspace*{\fill}\\The function is \texMathInline{sin(x)} over \texMathInline{(-\pi,\pi)}.
 
 
 \begin{SCodeFlow}\begin{RktBlk}\begin{SingleColumn}\begin{RktBlk}\begin{SingleColumn}\RktPn{(}\RktSym{\badlink{\RktValLink{realize}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{staff{-}realizer}}}\RktPn{)}
@@ -1101,9 +1115,11 @@ Here is the finished work. I will use \RktPn{(}\RktSym{\badlink{\RktValLink{unif
 
 \mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{\badlink{\RktValLink{@}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\badlink{\RktValLink{interval}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktVal{5}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{6}\RktPn{]}\RktPn{)}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{\badlink{\RktValLink{note}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{e}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{0}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{)}
 
-\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{function{-}{\Stttextmore}notes}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{\mbox{{-}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{pi}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{pi}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{]}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+\mbox{\hphantom{\Scribtexttt{xxxx}}}\RktPn{(}\RktSym{function{-}{\Stttextmore}notes}
 
-\raisebox{-0.7999999999999545bp}{\makebox[240.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_4.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
+\mbox{\hphantom{\Scribtexttt{xxxxxx}}}\RktPn{[}\RktPn{(}\RktSym{\mbox{{-}}}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{pi}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktSym{pi}\RktPn{]}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{[}\RktPn{(}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{3}\RktPn{)}\mbox{\hphantom{\Scribtexttt{x}}}\RktPn{(}\RktSym{a}\mbox{\hphantom{\Scribtexttt{x}}}\RktVal{4}\RktPn{)}\RktPn{]}\RktPn{)}\RktPn{)}\RktPn{)}\end{SingleColumn}\end{RktBlk}
+
+\raisebox{-0.7999999999999545bp}{\makebox[232.0bp][l]{\includegraphics[trim=2.4000000000000004 2.4000000000000004 2.4000000000000004 2.4000000000000004]{pict_4.pdf}}}\end{SingleColumn}\end{RktBlk}\end{SCodeFlow}
 
 \sectionNewpage
 

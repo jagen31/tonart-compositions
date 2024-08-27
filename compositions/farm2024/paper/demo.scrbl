@@ -79,7 +79,9 @@ Music has two coordinates,
 @linebreak[]
 @(my-bnf
    (list @nonterm{coordinate}
-         @BNF-seq[open @code{interval} @BNF-seq[open @nonterm{number} @nonterm{number} close] close]
+         @BNF-seq-lines[
+          (list @BNF-seq[open @code{interval}])
+          (list @hspace[1] @BNF-seq[open @nonterm{number} @nonterm{number} close] close)]
          @BNF-seq[open @code{voice} @kleenestar[@nonterm{id}] close]))
 @linebreak[]
 which are orthogonal and represent the horizontal (time) and vertical (voice)
@@ -267,8 +269,8 @@ To finish off, we will try adding a more obscure object to our composition.
 @code{function->notes} applies to functions, and it creates a melody that fits within the surrounding 
 harmony and matches the contour of the function.
 
-Here is the finished work. I will use @code{(uniform-rhythm 1/4)} as a shorthand for 
-@code{(rhythm 1/4 1/4 1/4 ...)}.  The function is @${sin(x)} over @${(-\pi,\pi)}.
+Here is the finished work.@linebreak[]I will use @code{(uniform-rhythm 1/4)} as a shorthand for 
+@linebreak[]@code{(rhythm 1/4 1/4 1/4 ...)}.@linebreak[]The function is @${sin(x)} over @${(-\pi,\pi)}.
 @(examples
   #:eval helper-eval
   #:label #f
@@ -281,4 +283,5 @@ Here is the finished work. I will use @code{(uniform-rhythm 1/4)} as a shorthand
         (function (x) (sin x))
         (uniform-rhythm 1/4))
       (|@| [(interval [5 6])] (note e 0 4))
-      (function->notes [(- pi) pi] [(a 3) (a 4)]))))
+      (function->notes 
+        [(- pi) pi] [(a 3) (a 4)]))))

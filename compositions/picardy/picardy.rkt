@@ -3,13 +3,13 @@
 (require tonart)
 
 (define-simple-rewriter picardy-tune x-picardy-tune
-  picardy-rhythm picardy->^s (apply-rhythm))
+  picardy-rhythm picardy-^s (apply-rhythm))
 
 (provide x-picardy-tune)
 
 (define-art the-canon
-  (voice@ (one) (picardy-tune) (octave 5)) 
-  (voice@ (two) (picardy-tune) (translate 2) (octave 4)))
+  (voice@ (one) (picardy-tune)) 
+  (voice@ (two) (picardy-tune) (translate 2)))
 
 (define-art bassline
   (seq (^s 1 4 1 4 0 3 1 4 1 6 7 8 1 4 6 8 1 3 4 1))
@@ -31,25 +31,38 @@
   (rhythm 1 1 1 1 2 2 2 2 2 1 1 1 1 1 1 2 4 2 4)
   (apply-rhythm))
 
-(define-art the-piece-
+(define-art the-piece-a
   ;; pedal tone
-  (measure@ [1 20] the-canon (voice@ (three) (^ 1) (octave 3)))
-  (measure@ [21 40] the-canon
+  (i@ [0 80] the-canon 
+    (voice@ (one) (octave 5))
+    (voice@ (two) (octave 4))
+    (voice@ (three) (^ 1) (octave 3))))
+
+(define-art the-piece-b-
+  (i@ [0 80] 
+    ;; canon
+    the-canon
+    (voice@ (one) (octave 5)) (voice@ (two) (octave 4))
     (voice@ (three) bassline (octave 3))
+    (voice@ (four) (octave 5)) (voice@ (five) (octave 4))
+
     (voice@ (four)
       ;; FIXME jagen not aesthetic at all.  this just means- countermelody twice :(
-      (i@ [0 48] (loop 24 countermelody) (expand-loop) (octave 5)))
+      (i@ [0 48] (loop 24 countermelody) (expand-loop)))
 
-    (measure@ [13 20] (voice@ (four) fallen (octave 5)) (voice@ (five) fallen2 (octave 4)))))
+    (i@ [48 80] (voice@ (four) fallen) (voice@ (five) fallen2))))
 
 ;; finishing touches
-(define-art the-piece
-  the-piece-
+(define-art the-piece-b
+  the-piece-b-
   ;; smooth transitions
   (voice@ (four)
     ;; add a sharp 3 to throw off the ear a bit, foreshadow later harmony
-    (measure@ 27 (i@ [0 1] (delete ^) (^ 3 1)))
+    (i@ 24 (i@ [0 1] (delete ^) (^ 3 1)))
     ;; just sounds better
-    (measure@ 32 (i@ [0 2] (delete ^) (-- [1 (^ 1)] [1 (^ 1)])))))
+    #;(i@ 48 (i@ [0 2] (delete ^) (-- [1 (^ 1)] [1 (^ 1)])))))
 
-(realize (namespace-provide-realizer) (reify-art-definitions))
+(define-art the-piece (-- [80 the-piece-a] [80 the-piece-b]))
+
+#;(realize (namespace-provide-realizer) (reify-art-definitions))
+(provide (all-defined-out))
