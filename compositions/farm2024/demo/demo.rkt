@@ -94,16 +94,33 @@
               (rhythm 1/4 1/4 1/4 2)
               (apply-rhythm)))]))
 
+(define-art opening
+  (voice@ [accomp] (trumpet-blast [c 0 4] [f 0 4])) (note->midi))
+(define-art opening2
+  (-- [8]
+      [4 (voice@ (soprano) (trumpet-blast [g 0 4] [a 0 4]))
+          (voice@ (bass) (trumpet-blast [c 0 2] [f 0 2]))]
+      [4 (voice@ (soprano) (trumpet-blast [c 0 5] [f 0 5]))
+         (voice@ (accomp) (trumpet-blast [c 0 4] [f 0 4]))
+         (voice@ (bass) (trumpet-blast [c 0 2] [f 0 2]))])
+  (voice@ (accomp) (constant-structure) (structure-notes [M])
+          (chord->notes/simple 3))
+  (note->midi))
+
 (define-art the-script
   (ix--
    (speak "Welcome to my Tonart demo!")
-   (output (! (voice@ [accomp] (trumpet-blast [c 0 4] [f 0 4])) (note->midi)))
+   (output (! opening))
    (pause 4)
+   
    (speak "Tonart is a language for composing music.")
-   (speak "The major idea behind the language is to provide a score-like context for an extensible language of music notations.")
-   (speak "You can think of it like a stack-based language...")
+   (speak "The major idea behind the language is composition in a score like context with extensible music notation.")
+   (speak "You can think of it as abstract syntax for music scores...")
+   (speak "Or, more operationally, you can think of it like a stack-based language...")
    (speak "...except instead of pushing values onto a stack, you are writing music syntax onto a music score.")
-   (speak "the standard way the score structure is defined is by using two 'coordinates', voice and interval.")
+   (speak "and instead of running operators over parts of the stack, you run rewrites over parts of the score.")
+   (speak "so, we specify a score structure and write notations within it.")
+   (speak "the standard way the score structure is specified is by using two 'coordinates', voice and interval.")
    (speak "These are roughly the vertical and horizontal dimensions of staff paper.")
    
    (output #<<<
@@ -111,7 +128,8 @@
   .....)
 <
            )
-   (speak "The @-syntax indicates that any notations within the body will be located at the provided coordinates.")
+   (speak "To start writing music in tonart, we use the @-form")
+   (speak "The @-form indicates that any notations within the body will be located at the provided coordinates.")
    (speak "This indicates that whatever we write will be in the soprano voice, from beat 0 to 4.")
    (pause 4)
    
@@ -120,9 +138,20 @@
   (note c 0 5))
 <
               )
-   (speak "and here is a note for the soprano!") 
-   (pause 4)
-   (speak "using the staff realizer, we can see it on score paper")
+   (speak "we will start with our first notation, musical note")
+   (speak "this is the iconic note you think of when you think of sheet music.")
+   (speak "here is a note for the soprano!  this is C in the 5th octave")
+   (pause 2)
+   (speak "however, we can't just evaluate this.  This is a tonart form, in a racket repl.")
+   (speak "we need a process for going from tonart to racket.")
+   (speak "I call this process 'realization'. The reason I call it this is because its")
+   (speak "like, taking this notation, this piece of art, and turning it into a reality")
+   (speak "well, in the case of this embedded DSL, turning it into Racket.  Racket reality.")
+   
+   
+   
+   (speak "our first realizer is the staff realizer.")
+   (speak "using the staff realizer, we can see a score paper representation")
    (output #<<<
 (realize (staff-realizer [800 200])
   (@ [(voice soprano) (interval 0 4)]
@@ -146,18 +175,15 @@
               )
 
    (pause 4)
-   (speak "oh.... that didn't work.  Something to realize about realizers is- they only understand a certain language.")
+   (speak "oh.... that didn't work.  Something to realize about realizers is- they only understand a certain input language.")
    (speak "just like handing a human performer a list of frequencies and durations isn't going to do much good,")
-   (speak "handing the computer sheet music is simply not going to cut it.")
+   (speak "handing the play-realizer sheet music is simply not going to cut it.")
+   (speak "We can think of what we have as 'note music'")
+   (speak "to get the computer to play it, we'll have to compile the note music into some other music language.")
+   (speak "The play realizer recognizes two types of notations.")
+   (speak "So we have a couple options")
 
-   (speak "The play realizer recognizes two types of notations- tones, and midi.")
-   (speak "tones are, like.  The classic synthesized sound you get by programming a frequency into an oscillator.")
-   (speak "MIDI, the musical instrument digital interface, is a very old standard for transmitting music events.")
-   (speak "I have a digital pipe organ listening for midi events, so that's how we'll hear them rendered.")
-
-   (speak "To produce a score the computer can read, we'll use Tonart's rewriters.")
-   (speak "Rewriters are the workhorse of tonart.  They help a composer to compile one music language into another.")
-   (speak "we have two straightforward rewriters here, 'note->tone' and 'note->midi'.")
+   (speak "we'll use the 'note->tone' rewriter to compile to tones.")
    
    (output #<<<
 (realize (play-realizer)
@@ -174,7 +200,9 @@
           (note c 0 5))
        (note->tone)))
    (pause 4)
-   (speak "that was the tone")
+   (speak "it sounds like this.")
+   (pause 2)
+   (speak "we'll use the 'note->midi' rewriter to compile to midi.")
       (output #<<<
 (realize (play-realizer)
   (@ [(voice soprano) (interval 0 4)]
@@ -210,10 +238,13 @@
    (output (! (voice@ [soprano] (i@ [0 4] (note c 0 5))) (note->midi)))
    (pause 4)
 
-   (speak "so, we want to compose something.  lets give our soprano something more interesting.")
-   (speak "we'll use a special form called 'seq'.  This is not an object or a rewriter.")
-   (speak "This is a _context_.  Tonart uses a context called 'music' with coordinates voice and interval.")
-   (speak "sequences use a context called seq, with one coordinate called 'index'.")
+   (speak "so, now we want to compose something.  lets give our soprano something more interesting.")
+   (speak "I could write out each note with interval 0 to 2, C, interval 2 to 4, E... etc.")
+   (speak "but how I really want to do it is: just specify a sequence of notes and a rhythm,")
+   (speak "and rewrite that into note music.")
+   (speak "we'll use a special form for it.  It will be a _context_.")
+   (speak "Tonart uses a context called 'music' with coordinates voice and interval.")
+   (speak "this will be a context which has one coordinate, `index`, and we will call it `seq` (short for sequence)")
    (speak "rhythm is an object, apply-rhythm is a rewriter that takes a rhythm")
    (speak "with a seq in context, and puts the elements of the sequence one after the other in time,")
    (speak "matching the rhythm.")
@@ -291,7 +322,7 @@
 
    (pause 12)
 
-   (speak "of course now you want to know if it sounds good with the melody.  I won't keep you waiting.")
+   (speak "of course i'm sure you want to know if it sounds good with the melody.  I won't keep you waiting.")
 
    (output #<<<
 (! (voice@ [soprano] melody)
@@ -401,11 +432,48 @@
    (output
     (= (voice@ (descant) melody2)))
    (pause 4)
+
+   (speak "let's play it of course...")
+
+      (output #<<<
+(! (voice@ (descant) melody2))
+<
+              )
+   (pause 2)
+   (output
+    (! (voice@ (descant) melody2)))
+   (pause 12)
    
    (speak "That's everything I want for the composition!")
-   (speak "lets check it out!")
+   (speak "Lets check out the whole thing together!")
 
    (pause 2)
+
+   (output #<<<
+(= (voice@ [soprano] melody)
+   (voice@ [descant] melody2 (i@ [10 12] (note c 0 4)))
+   (voice@ [accomp] harmony)
+   
+   (chord->notes/simple 3)
+   (note->midi))
+<
+           )
+
+   (speak "[ I handwrote a final note for our second melody ]")
+
+   (pause 2)
+
+   (execute
+    (= (voice@ [soprano] melody)
+       (voice@ [descant] melody2 (i@ [10 12] (note c 0 4)))
+       (voice@ [accomp] harmony)
+       
+       (chord->notes/simple 3)
+       (note->midi)))
+
+   (pause 8)
+
+   (speak "and finally we'll play it...")
 
    (output #<<<
 (! (voice@ [soprano] melody)
@@ -427,17 +495,33 @@
        (chord->notes/simple 3)
        (note->midi)))
 
-   (pause 12)
+   (pause 16)
 
-   
-   
-   (execute
-    (! (-- [8]
-           [12 (voice@ (soprano) (trumpet-blast [g 0 4] [a 0 4]))
-               (voice@ (bass) (trumpet-blast [c 0 2] [f 0 2]))])
-       (note->midi)))
+   (speak "I hope you enjoyed!")
 
-   (execute (realize (perform-script) the-script))))
+   (pause 4)
+
+   (speak "before we go, I want to show you a couple things.")
+   (speak "first, here is the opening to a real piece I'm working on, which uses the same techniques we used today.")
+
+
+      (output #<<<
+(execute (require "../../random/test.rkt"))
+<
+           )
+   (execute (require "../../random/test.rkt"))
+
+   (output (= default-notes))
+   (pause 4)
+   (execute (! default-notes (note->midi)))
+
+   (pause 40)
+
+   (speak "finally, this script I am reading off of is also written in art...")
+   (speak "and while I think I've done a good job performing it.  There's also a computer performance!")
+   (speak "so let me introduce my co presenter...")
+   
+   (execute (begin (! opening2) (realize (perform-script) the-script)))))
 
 (define-art-realizer perform-script
   (λ (stx)
@@ -452,7 +536,8 @@
                     [({~literal output} music ...)
                      #'(begin (displayln music) ...)]
                     [({~literal pause} t:number) #'(sleep t)])))))
-        
+
+(provide (all-defined-out))
 
 #;(define-syntax (#%top-interaction stx)
   (println stx)
