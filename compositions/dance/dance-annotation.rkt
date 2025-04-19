@@ -6,7 +6,7 @@
 
 (define (arm-at hour colour)
     (rotate (* -30 hour)
-            (put-pinhole 0 120 (line 0 120 (the-pen colour)))))
+            (put-pinhole 0 110 (line 0 110 (the-pen colour)))))
 
 (define (make-body orientation)
     (define (left-body)
@@ -25,11 +25,11 @@
    (clear-pinhole
     (match orientation
       ['towards
-       (define one-arm (overlay/pinhole right-arm (put-pinhole 0 75 body)))
-       (overlay/pinhole (put-pinhole (+ (pinhole-x one-arm) 100) (pinhole-y one-arm) one-arm) left-arm)]
+       (define one-arm (overlay/pinhole right-arm (put-pinhole 10 75 body)))
+       (underlay/pinhole (put-pinhole (+ (pinhole-x one-arm) 80) (pinhole-y one-arm) one-arm) left-arm)]
       ['away
-       (define one-arm (underlay/pinhole left-arm (put-pinhole 0 75 body)))
-       (underlay/pinhole (put-pinhole (+ (pinhole-x one-arm) 100) (pinhole-y one-arm) one-arm) right-arm)]
+       (define one-arm (underlay/pinhole left-arm (put-pinhole 10 75 body)))
+       (overlay/pinhole (put-pinhole (+ (pinhole-x one-arm) 80) (pinhole-y one-arm) one-arm) right-arm)]
       ['left
        (define one-arm (overlay/pinhole left-arm (put-pinhole 40 50 body)))
        (overlay/pinhole (put-pinhole (- (pinhole-x one-arm) 5) (pinhole-y one-arm) one-arm) right-arm)]
@@ -41,3 +41,5 @@
 (for*/list ([o '(towards away left right)] [i (in-range 12)])
   (make-dancer i i o))
 |#
+
+(provide (all-defined-out))
