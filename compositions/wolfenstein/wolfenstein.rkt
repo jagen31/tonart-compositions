@@ -73,8 +73,8 @@
 
 (define-art song
   (voice@ (melody) (key d 0 minor) 
-    (mi@ ([8 4]) melody1 (octave 5)) (mi@ ([16 4]) melody2 (octave 5)) 
-    (mi@ ([24 4]) melody1 (octave 6)) (mi@ ([32 4]) melody2 (octave 6)) (metric-interval->interval))
+    (i@ 31 melody1 (octave 5)) (i@ 63 melody2 (octave 5)) 
+    (i@ 95 melody1 (octave 6)) (i@ 127 melody2 (octave 6)))
 
   (voice@ (accomp)
     (seq 

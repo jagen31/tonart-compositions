@@ -10,10 +10,10 @@
 
 (define (make-body orientation)
     (define (left-body)
-      (beside (square 30 'solid 'yellow) (rectangle 30 120 'solid 'yellow) (rectangle 30 120 'solid 'purple)))
+      (beside (square 30 'solid 'yellow) (rectangle 30 120 'solid 'yellow) (rectangle 30 120 'solid (color 130 0 200 255))))
     (match orientation
       ['towards (ellipse 100 150 'solid 'yellow)]
-      ['away (ellipse 100 150 'solid 'purple)]
+      ['away (ellipse 100 150 'solid (color 130 0 200 210))]
       ['left (left-body)]
       ['right (flip-horizontal (left-body))]))
 

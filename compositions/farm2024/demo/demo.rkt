@@ -1,6 +1,7 @@
 #lang racket
 
-(require tonart art/sequence/ravel racket/math (prefix-in ta: tonart) (prefix-in rack: (only-in racket #%top-interaction)) syntax/parse/define
+(require tonart (except-in 2htdp/image bitmap) art/sequence/ravel racket/math (prefix-in ta: tonart) 
+         (prefix-in rack: (only-in racket #%top-interaction)) syntax/parse/define
          (for-syntax syntax/parse racket/set racket/math))
 
 (start-chucker chuck)
@@ -18,7 +19,6 @@
       [(_ w h)
        (qq-art stx (function->image w h))])))
   
-
 (define-art demo-prelude
   (voice@ (soprano) (channel 1)) 
   (voice@ (accomp) (channel 2)) 
@@ -43,6 +43,7 @@
         (seq-ref)
         (delete point-set)))))
 
+;; a staff-realizer which is set up for our demo voices
 (define-art-realizer staff-realizer
   (λ (stx)
     (syntax-parse stx
@@ -60,17 +61,20 @@
   (syntax-parser
     [(_ n:number) #'(chuck (advance-time n))]))
 
+;; realizer which sends and advances time
 (define-art-realizer* play-realizer
   (λ (stx)
     #`(begin
         (chuck (send demo-prelude #,@(current-ctxt) (demo-postlude)))
         (chuck (advance-time 4)))))
 
+;; shorthand for play realizer
 (define-syntax !
   (syntax-parser
     [(_ expr ...)
      #'(realize (play-realizer) expr ...)]))
 
+;; shorthand for staff realizer
 (define-syntax =
   (syntax-parser
     [(_ [w:number h:number] expr ...)
@@ -381,7 +385,7 @@
 
    (output #<<<
 (dmr (i@ [0 8] (function (x) (sin (* 4 x)))
-     (function->contour)))
+     (function->contour (- pi) pi)))
 <
            )
 
@@ -436,12 +440,12 @@
    (speak "let's play it of course...")
 
       (output #<<<
-(! (voice@ (descant) melody2))
+(! (voice@ (descant) melody2) (note->midi))
 <
               )
    (pause 2)
    (output
-    (! (voice@ (descant) melody2)))
+    (! (voice@ (descant) melody2) (note->midi)))
    (pause 12)
    
    (speak "That's everything I want for the composition!")
@@ -454,8 +458,7 @@
    (voice@ [descant] melody2 (i@ [10 12] (note c 0 4)))
    (voice@ [accomp] harmony)
    
-   (chord->notes/simple 3)
-   (note->midi))
+   (chord->notes/simple 3))
 <
            )
 
@@ -468,8 +471,7 @@
        (voice@ [descant] melody2 (i@ [10 12] (note c 0 4)))
        (voice@ [accomp] harmony)
        
-       (chord->notes/simple 3)
-       (note->midi)))
+       (chord->notes/simple 3)))
 
    (pause 8)
 

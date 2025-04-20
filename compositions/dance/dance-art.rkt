@@ -4,6 +4,7 @@
 
 (define-art-object (arm-diagram []))
 (define-art-object (facing []))
+(define-art-object (full-arm-diagram []))
 
 (define-art-rewriter arm-diagrams
   (λ (stx)
@@ -20,15 +21,22 @@
            (match f ['t 'towards] ['a 'away] ['l 'left] ['r 'right])))
        (qq-art stx (ix-- (facing face) ...))])))
 
+(define-mapping-rewriter (arm-diagram->full-arm-diagram [(: d arm-diagram)])
+  (λ (stx d)
+    (syntax-parse d
+      [(_ l r)
+       (define/syntax-parse (_ orient) (require-context (lookup-ctxt) d #'facing))
+       (qq-art d (full-arm-diagram l r orient))])))
+                                                        
 
-(define-drawer arm-diagram-drawer
+
+(define-drawer full-arm-diagram-drawer
   (λ (e)
-    (define/syntax-parse (_ direction) (require-context (lookup-ctxt) e #'facing))
     (syntax-parse e
-      [({~literal arm-diagram} l r)
-       #'(im:scale 1/3 (make-dancer l r 'direction))]
+      [({~literal full-arm-diagram} l r orient)
+       #'(im:scale 1/4 (make-dancer l r 'orient))]
       [_ #f])))
 
-(register-drawer! arm-diagram arm-diagram-drawer)
+(register-drawer! full-arm-diagram full-arm-diagram-drawer)
 
 (provide (all-defined-out))
