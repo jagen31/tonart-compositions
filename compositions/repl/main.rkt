@@ -81,7 +81,7 @@
  
 (gui:send input-frame show #t)
 
-(define output-frame (new frame% [label "Output (draw-realizer)"] [width 800] [height 400]))
+(define output-frame (new frame% [label "Output (score-realizer)"] [width 800] [height 400]))
 (new canvas% 
   [parent output-frame]
   [paint-callback

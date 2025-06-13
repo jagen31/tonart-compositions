@@ -5,7 +5,7 @@
          scribble-math
          scribble-abbrevs/manual (for-label tonart)
          (except-in scribble/eval examples)
-         scribble/example
+         scribble/example[]
          scribble/bnf
          (for-syntax racket/base syntax/parse)]
 
