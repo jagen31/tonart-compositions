@@ -223,7 +223,11 @@ To export these names, Racket module syntax goes in the header, as shown:
 @linebreak[]
 
 We will only include a couple additional sample sections in this document.
-The demo score will include many more.  Here is a section which could
+The live demo score will include many more.
+
+@linebreak[]
+
+Here is a section which could
 augment the theme with information about where the performers would stand,
 presumably in a concert hall setting.
 
@@ -231,7 +235,7 @@ presumably in a concert hall setting.
 @(scale/xy 2/13 1/5 (bitmap "score_4.png"))
 @linebreak[]
 
-Here is a section which can augment the theme with organ performance information, 
+Here is a section which could augment the theme with organ performance information, 
 allowing it to be performed on an organ at some point in a composition.
 
 @linebreak[]
@@ -243,6 +247,8 @@ includes a pedal line, to add some variety.
 
 @linebreak[]
 @(scale/xy 2/13 1/5 (bitmap "score_6.png"))
+
+@linebreak[]
 
 @section{Transforming to Tonart}
 
