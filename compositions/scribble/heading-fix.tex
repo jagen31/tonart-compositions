@@ -1,0 +1,60 @@
+% Override acmart's run-in \subsubsection (and the deeper \paragraph /
+% \subparagraph) so they typeset as ordinary display headings on their
+% own line, rather than running into the following paragraph.
+%
+% Why we need this: the scribble realizer maps art-subsection to
+% LaTeX's \subsubsection (or \paragraph when nested even deeper).
+% acmart sets a negative afterskip on these — see the `{-3.5\p@}` and
+% `{-3.5\p@}` after-skips in acmart.cls's \renewcommand\subsubsection
+% and \renewcommand\paragraph — which makes them "run-in" headings:
+% the next paragraph's first line attaches to the heading.  For a
+% concert/play programme that produces output like
+%
+%   Twinkle Twinkle Little Star. Maria gives an introduction.
+%
+% all on one line, instead of a proper heading on its own line above
+% the stage direction.  We re-issue acmart's definitions with a
+% positive afterskip to restore the normal display-heading layout.
+
+\makeatletter
+\providecommand{\ACM@NRadjust}[1]{#1}
+\providecommand{\@subsubsecfont}{\@secfont}
+\providecommand{\@parfont}{\@secfont}
+\providecommand{\@subparfont}{\@secfont}
+\providecommand{\@adddotafter}{}
+
+\@ifclassloaded{acmart}{%
+  \renewcommand\subsubsection{\def\@toclevel{3}%
+    \@startsection{subsubsection}{3}{\z@}%
+      {-.5\baselineskip \@plus -2\p@ \@minus -.2\p@}%
+      {.2\baselineskip}%
+      {\ACM@NRadjust{\@subsubsecfont\@adddotafter}}}
+  \renewcommand\paragraph{\def\@toclevel{4}%
+    \@startsection{paragraph}{4}{\z@}%
+      {-.5\baselineskip \@plus -2\p@ \@minus -.2\p@}%
+      {.15\baselineskip}%
+      {\ACM@NRadjust{\@parfont\@adddotafter}}}
+  \renewcommand\subparagraph{\def\@toclevel{5}%
+    \@startsection{subparagraph}{5}{\z@}%
+      {-.5\baselineskip \@plus -2\p@ \@minus -.2\p@}%
+      {.1\baselineskip}%
+      {\ACM@NRadjust{\@subparfont\@adddotafter}}}
+}{}
+
+% Override scribble's level-4 heading (\Ssubsubsubsectionstar, used by
+% the realizer for art-subsubsection — and for art-subsection when the
+% realized doc is nested deep enough that level-3 = subsubsection has
+% already been consumed by the enclosing paper).  Scribble's default
+% is just `{\bf #1}` rendered inline, which means each "heading" is
+% really just bold text at the start of a normal paragraph and so
+% picks up \parindent whenever the preceding block isn't a real
+% heading (e.g. it sits right after a centered image or an italic
+% stage direction).  Promote it to a real display heading: paragraph
+% break, kill the indent, set the bold name, then use
+% \@afterheading to suppress indent on the next paragraph too.
+\renewcommand{\Ssubsubsubsectionstar}[1]{%
+  \par\addvspace{.4\baselineskip}%
+  \noindent{\bfseries #1}\par
+  \nopagebreak\vspace{.1\baselineskip}%
+  \@afterheading}
+\makeatother

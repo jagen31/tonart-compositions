@@ -1,0 +1,19 @@
+% Two-column-layout add-on for the scribble realizer's PDF output.
+%
+% Activated when the realizer is called with #:columns 2.  We use the
+% `multicol` package's `multicols` environment because, unlike the
+% document-class twocolumn option, it balances the columns, lets
+% section headings span the full width, and can be turned on/off
+% mid-document.  Scribble's `nested-flow` can't contain parts, so
+% instead of wrapping the realized body in an environment we emit two
+% sentinel paragraphs whose styles expand to the literal \begin and
+% \end tokens.  See two-col-begin-style / two-col-end-style in
+% scribble.rkt.
+\usepackage{multicol}
+
+% Both macros take and discard a single argument so that scribble can
+% wrap them as ordinary paragraph-style commands — the paragraph's
+% (empty) content goes into #1 and is dropped, leaving just the bare
+% \begin{multicols}{2} / \end{multicols} tokens.
+\newcommand{\tonartcolsbegin}[1]{\begin{multicols}{2}#1}
+\newcommand{\tonartcolsend}[1]{#1\end{multicols}}

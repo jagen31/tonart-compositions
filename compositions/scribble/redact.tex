@@ -1,0 +1,19 @@
+% \TonartRedact{text} draws a single contiguous black bar over
+% `text` that wraps naturally across line breaks — the classic
+% redaction look.
+%
+% Implementation: `soul`'s `\hl{...}` highlights its argument with
+% a colored background that *does* break across lines (it splits
+% into one rectangle per visual line, unlike `\colorbox` which is
+% a single unbreakable horizontal box).  We set the highlight
+% color to black and the text color to black so the text is
+% invisible against the background, then restore the document's
+% default color via `\color{black}`-in-a-group.  xcolor + soul are
+% loaded once globally; scribble's tex-addition mechanism dedupes
+% identical addition bytes so multiple realize calls share this.
+\usepackage{soul}
+\providecommand{\TonartRedact}[1]{{%
+  \sethlcolor{black}%
+  \color{black}%
+  \hl{#1}%
+}}

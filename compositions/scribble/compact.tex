@@ -1,0 +1,25 @@
+% Compact-layout add-on for the scribble realizer's PDF output.
+%
+% Mostly this file exists to disable scribble/manual's per-section
+% page break.  Beyond that we keep things very close to scribble's
+% defaults so the document still breathes.
+
+% --- the actual fix --------------------------------------------------
+% scribble/manual's manual-style.tex redefines \sectionNewpage to
+% \newpage, so every top-level section starts on a fresh page even
+% when there's plenty of room left on the previous one.  scribble
+% loads tex-addition files BEFORE manual-style.tex, so a bare
+% \renewcommand here would be silently overwritten.  defer the
+% override until \AtBeginDocument, which runs after both preambles.
+\AtBeginDocument{%
+  \renewcommand{\sectionNewpage}{}%
+  \renewcommand{\partNewpage}{}%
+}
+
+% don't pad short pages out to the bottom by stretching whitespace.
+\raggedbottom
+
+% --- gentle space tweaks --------------------------------------------
+% slightly slimmer margins than the article default (~1.5") so the
+% music snippets get a comfortable amount of room.
+\usepackage[margin=1in]{geometry}
