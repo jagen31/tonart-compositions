@@ -1,0 +1,7 @@
+# generated on render / build; regenerated from the .rkt sources
+compiled/
+resources/
+scribble-resources/
+# musescore + macos cruft
+.mscbackup/
+.DS_Store
