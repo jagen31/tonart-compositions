@@ -1,0 +1,6 @@
+# generated on render / build; regenerated from the .rkt + scores
+compiled/
+resources/
+scribble-resources/
+.mscbackup/
+.DS_Store

@@ -28,7 +28,11 @@
 
 (provide hymnal hymnal-header hymnal-rows
          hymn-number hymn-number->title hymn-number->score
-         rebuild program)
+         rebuild program program-title)
+
+;; Overrides the directory-name default the preview uses for the
+;; document title when this file is previewed on its own.
+(define program-title "PL Songbook")
 ;; ===================================================================
 ;; A little hymnal
 ;; ===================================================================
@@ -81,7 +85,7 @@
 ;; drops straight in as notes.
 (define-art hymnal-rows
   (@ [(table hymnal)]
-     (row (number 1)  (string "Come to FARM and hear our music")
+     (row (number 3)  (string "Come to FARM and hear our music")
           (symbol nettleton) (meter 8 7 8 7 D)
           (string "Jared Gentner, 2026")
           (string "Wyeth's Repository of Sacred Music, 1813")
@@ -251,7 +255,7 @@
 (define-art program
   hymnal
   (@ [(art-section Hymnal)]
-     (ix-- (hymn-number 1) (hymn-number 2)))
+     (ix-- (hymn-number 3) (hymn-number 2)))
   (hymn-number->score)
   (key d 0 major)
   (inline-music-seq)

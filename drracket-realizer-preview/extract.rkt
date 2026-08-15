@@ -251,7 +251,7 @@
            [(not art) (finish-err (missing-art-message path mode names))]
            [(eq? mode 'scribble)
             (call-with-driver
-             dir ".scrbl" (scribble-driver-text root path art (title-for path))
+             dir ".scrbl" (scribble-driver-text root path art (title-of path))
              (lambda (drv)
                (define doc (dynamic-require drv 'doc (lambda () #f)))
                (if (part? doc)
@@ -266,11 +266,22 @@
                    (list 'code art s)
                    (finish-err "The strudel realizer produced no output."))))])]))))
 
-;; The realizer wants a `#:title`.  Realizing bare means there is no
-;; title in the art to take one from, so use the composition
-;; directory's name -- that is the piece's name in this repo's layout,
-;; and it beats inventing one or falling back to the realizer's own
-;; default of "tonart".
+;; The title for the document.  A module can name itself by providing a
+;; string `program-title`; that wins.  Otherwise there is no title in
+;; the art to take one from, so fall back to the composition directory's
+;; name -- that is the piece's name in this repo's layout, and it beats
+;; inventing one or the realizer's own default of "tonart".
+;;
+;; `program-title` is a plain value, so unlike the `program` art it can
+;; just be pulled with `dynamic-require`.  The failure thunk covers a
+;; module that provides none, and the `string?` guard a module that
+;; bound it to something other than a string.
+(define (title-of path)
+  (define supplied
+    (with-handlers ([(lambda (_) #t) (lambda (_) #f)])
+      (dynamic-require path 'program-title (lambda () #f))))
+  (if (string? supplied) supplied (title-for path)))
+
 (define (title-for path)
   (define dir (path-only path))
   (define-values (base name dir?) (split-path dir))

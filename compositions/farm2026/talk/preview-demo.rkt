@@ -20,12 +20,18 @@
 (require (except-in tonart direction transpose-octave)
          datenart
          "hymnal.rkt"
+         "talk-deck.rkt"
          (except-in "../../scribble/scribble.rkt" insert)
          ;; dance vocabulary (facing, arm-diagram, arm-diagrams->images);
          ;; re-exports ../dance/dance-art.rkt.
          "../../lilypond/arm-diagram.rkt")
 
-(provide program program-scribble program-strudel program-chuck)
+(provide program program-scribble program-strudel program-chuck
+         program-title)
+
+;; Overrides the directory-name default the preview uses for the
+;; document title.
+(define program-title "The Art of Concert Programming")
 
 ;; The shared base -- what either button falls back to.
 (define-art farm-bass
@@ -73,7 +79,7 @@
        (line Presenter
              "Please rise and join us in singing, in full voice, hymn number 1, `Come to FARM and hear our music'!")
        (stage-direction "the audience rises"))
-      (voice@ [main] (hymn-number 1)))))
+      (voice@ [main] (hymn-number 3)))))
 
 ;; The closing number: a short, cheerful D-major hook and a dead-easy
 ;; dance -- always face the audience, three poses (rest / arms out /
@@ -108,15 +114,12 @@
          (i@ 6 (arm-diagram 9 3))     ; arms out
          (i@ 7 (arm-diagram 6 6))))))) ; rest
 
+;; The talk itself -- the slide deck lives in talk-deck.rkt.
 (define-art program-talk
   (@ [(art-section slides)]
      (ix--
       (art-title "Talk")
-      (art-slideshow
-       (ix--
-        (art-slide (vc-append 20 (t "Welcome to FARM")
-                              (colorize (filled-rectangle 200 8) "goldenrod")))
-        (art-slide (scale (t "one bit songs and heraldry") 2)))))))
+      talk-deck)))
 
 (define-art program
   hymnal

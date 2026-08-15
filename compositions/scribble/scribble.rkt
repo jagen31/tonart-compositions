@@ -689,14 +689,39 @@
 ;;   - raw slideshow forms (`(slide #:title …)`, `define`s, …), passed
 ;;     through untouched.
 ;; `ix--` wrappers are flattened away since order here is source order.
-(define-for-syntax (slideshow-module-body forms)
+;; Flatten `ix--` wrappers and turn nested `art-slide`s into `(slide …)`.
+(define-for-syntax (flatten-slide-forms forms)
   (append-map
    (lambda (f)
      (cond
-       [(and (pair? f) (eq? (car f) 'ix--)) (slideshow-module-body (cdr f))]
+       [(and (pair? f) (eq? (car f) 'ix--)) (flatten-slide-forms (cdr f))]
        [(and (pair? f) (eq? (car f) 'art-slide)) (list (cons 'slide (cdr f)))]
        [else (list f)]))
    forms))
+
+;; Rewrite every `(slide-image "rel/path")` anywhere in the body into a
+;; `(bitmap "/abs/path")`.  The path is resolved against `src-dir` (the
+;; program module's directory) at build time, so the absolute path is
+;; baked into the generated slideshow module -- the pane's render
+;; subprocess and the playback deck both find the image regardless of
+;; their own working directory, which a relative `bitmap` would not.
+(define-for-syntax (resolve-slide-images datum src-dir)
+  (cond
+    [(and (pair? datum) (eq? (car datum) 'slide-image)
+          (pair? (cdr datum)) (string? (cadr datum)))
+     (list 'bitmap (path->string (path->complete-path (cadr datum) src-dir)))]
+    [(pair? datum)
+     (cons (resolve-slide-images (car datum) src-dir)
+           (resolve-slide-images (cdr datum) src-dir))]
+    [else datum]))
+
+;; `src-dir` is the directory of the program module, used to resolve
+;; `slide-image` paths.  At realize time that is the load-relative
+;; directory; fall back to the current directory.
+(define-for-syntax (slideshow-module-body forms)
+  (define src-dir (or (current-load-relative-directory) (current-directory)))
+  (map (lambda (f) (resolve-slide-images f src-dir))
+       (flatten-slide-forms forms)))
 
 ;; Turn a `#lang slideshow` module body (a list of datums) into PNG
 ;; files, one per `slide`, and return their absolute paths.  Mirrors

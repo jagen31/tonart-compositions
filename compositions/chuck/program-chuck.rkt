@@ -175,15 +175,30 @@
   ;; Normalize an `art-slideshow` body into a `#lang slideshow` module
   ;; body -- the same rule the scribble realizer uses so a deck plays
   ;; and prints identically: nested `art-slide`s (optionally under
-  ;; `ix--`) become `(slide …)`, raw slideshow forms pass through.
-  (define (slideshow-module-body forms)
+  ;; `ix--`) become `(slide …)`, raw slideshow forms pass through, and
+  ;; `(slide-image "rel")` resolves to an absolute `(bitmap …)` against
+  ;; the program module's directory so the player finds it.
+  (define (flatten-slide-forms forms)
     (append-map
      (lambda (f)
        (cond
-         [(and (pair? f) (eq? (car f) 'ix--)) (slideshow-module-body (cdr f))]
+         [(and (pair? f) (eq? (car f) 'ix--)) (flatten-slide-forms (cdr f))]
          [(and (pair? f) (eq? (car f) 'art-slide)) (list (cons 'slide (cdr f)))]
          [else (list f)]))
      forms))
+  (define (resolve-slide-images datum src-dir)
+    (cond
+      [(and (pair? datum) (eq? (car datum) 'slide-image)
+            (pair? (cdr datum)) (string? (cadr datum)))
+       (list 'bitmap (path->string (path->complete-path (cadr datum) src-dir)))]
+      [(pair? datum)
+       (cons (resolve-slide-images (car datum) src-dir)
+             (resolve-slide-images (cdr datum) src-dir))]
+      [else datum]))
+  (define (slideshow-module-body forms)
+    (define src-dir (or (current-load-relative-directory) (current-directory)))
+    (map (lambda (f) (resolve-slide-images f src-dir))
+         (flatten-slide-forms forms)))
 
   ;; Document order comes from the `index` coordinate (set up by the
   ;; `(ix-- …)` around a section body), NOT from raw `(current-ctxt)`
