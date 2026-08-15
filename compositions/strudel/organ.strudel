@@ -1,0 +1,30 @@
+const kb = await midikeys('i61-2 i61')
+const kb2 = await midikeys('i61-1 i61')
+
+
+const to_synth = x => x.s("tri").room(1).shape(slider(0.479))
+  .pan(slider(0.198))
+  .gain(slider(0.11))
+
+
+
+const organ_channel_mapping = {
+  I: 1,
+  II: 2,
+  III: 3,
+  P: 9
+}
+
+const to_organ = n => x => x.midichan(organ_channel_mapping[n]).midi('IAC Driver Bus 1')
+const beat1 = "hh bd bd bd bd [sd,bd,hh,[ht lt]] [bd,hh] bd bd bd sd sd"
+const beat2 = "bd sd hh ht lt bd bd bd"
+
+const c = 0.5
+$: to_synth(kb("0.5")).clip(c)
+$: to_organ('I')(kb("0.5")).clip(c)
+
+$: to_synth(kb2("0.5")).clip(c)
+$: to_organ('II')(kb2("0.5")).clip(c)
+
+// $: beat2.s().bank("TR909").room(slider(1))
+//  .gain(slider(1))
