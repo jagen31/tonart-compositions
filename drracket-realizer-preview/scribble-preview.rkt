@@ -140,6 +140,12 @@
 (define (style-name* s) (if (style? s) (style-name s) s))
 (define (style-props* s) (if (style? s) (style-properties s) '()))
 
+;; The heading depth carried by an art-title-in-a-colored-section
+;; paragraph (emitted by scribble.rkt), or #f for an ordinary para.
+(define (colored-title-depth s)
+  (for/or ([prop (in-list (style-props* s))])
+    (and (pair? prop) (eq? (car prop) 'tonart-colored-title) (cadr prop))))
+
 ;; Colors from scribble's manual-racket.css, so code in the preview
 ;; looks like code in the rendered HTML.
 (define rkt-colors
@@ -230,7 +236,14 @@
     (define/override (render-paragraph p part ri)
       (define spans (capture-spans (lambda () (super render-paragraph p part ri))))
       (unless (null? spans)
-        (emit-block! (list* 'para (current-align) spans)))
+        ;; An art-title in a colored section arrives as a paragraph (it
+        ;; can't be a real heading inside the coloring nested-flow), but
+        ;; carries a `tonart-colored-title` property with its depth.
+        ;; Promote it to a heading block so it renders at heading scale.
+        (define depth (colored-title-depth (paragraph-style p)))
+        (if depth
+            (emit-block! (list* 'heading depth 'left spans))
+            (emit-block! (list* 'para (current-align) spans))))
       null)
 
     (define/override (render-nested-flow i part ri starting-item?)

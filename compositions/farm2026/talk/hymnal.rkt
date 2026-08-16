@@ -203,7 +203,7 @@
     (syntax-parse h
       [(_ n:number)
        (define r (lookup-hymn h (syntax-e #'n)))
-       (qq-art h (text #,(format "HYMN ~a. ~a"
+       (qq-art h (text #,(format "SONG ~a. ~a"
                                  (cell-value (row-cell r 'number))
                                  (cell-value (row-cell r 'title)))))])))
 

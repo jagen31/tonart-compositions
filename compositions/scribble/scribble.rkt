@@ -40,7 +40,7 @@
          art/coordinate/name
          (only-in scribble/manual title section subsection subsubsection
                                   subsubsub*section
-                                  para centered bold italic nested elem
+                                  para centered bold italic nested elem larger
                                   ;; scribble's `image` is renamed
                                   ;; locally so we can define our own
                                   ;; `image` art-object that the
@@ -1109,15 +1109,23 @@
          (syntax-parse expr
            [({~literal text} c:str)
             #`(para #,(syntax-e #'c))]
-           ;; art-title in a colored section: emit as a bold
-           ;; paragraph so it can live inside the wrapping
-           ;; nested-flow (and thus share the section's background
-           ;; color).  Loses scribble's section numbering / TOC
-           ;; entry, but matches what the colored "card" wants
-           ;; visually.
+           ;; art-title in a colored section: a scribble part-start
+           ;; (a real heading) can't live inside the wrapping
+           ;; nested-flow that paints the background, so this is a
+           ;; *paragraph* that shares the section's color.  To keep it
+           ;; heading-*sized*, the para carries a `tonart-colored-title`
+           ;; style property tagged with the heading depth: the preview
+           ;; renderer promotes such a para to a heading block (so
+           ;; layout gives it the heading scale), and `larger` gives the
+           ;; PDF the same bump.  The style name stays #f so LaTeX
+           ;; doesn't hunt for a command by that name.
            [({~literal art-title} c:str)
             #:when (colored-expr? expr)
-            #`(para (bold #,(syntax-e #'c)))]
+            (define d (max 0 (sub1 (art-section-depth expr))))
+            #`(para #:style (make-style
+                             #f (list (list 'tonart-colored-title
+                                            #,(+ section-depth-val d))))
+                    (larger (larger (bold #,(syntax-e #'c)))))]
            ;; art-title renders as a heading at depth =
            ;; length of its art-section path minus one
            ;; (so an art-title in `(@ [(art-section ...)] …)`

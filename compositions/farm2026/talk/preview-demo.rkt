@@ -20,7 +20,7 @@
 (require (except-in tonart direction transpose-octave)
          datenart
          "hymnal.rkt"
-         "talk-deck.rkt"
+         "resources.rkt"
          (except-in "../../scribble/scribble.rkt" insert)
          ;; dance vocabulary (facing, arm-diagram, arm-diagrams->images);
          ;; re-exports ../dance/dance-art.rkt.
@@ -60,24 +60,20 @@
   (@ [(art-section prelude)]
      (ix--
       (art-title "Prelude")
-      (music
-       (voice@ [main]
-               happy-birthday-^s happy-birthday-rhythm
-               (apply-rhythm)
-               (key g 0 major)
-               (octave 4)
-               (^->note))))))
+      (script
+       (line Presenter "Welcome to my Art demo!"))
+      (resource prelude))))
 
 (define-art program-opening-hymn
   (@ [(art-section opening-hymn)]
      (ix--
       (art-title "Opening Hymn")
-      #;(bg "goldenrod")
+      (bg "goldenrod")
       (script
-       (line Presenter "Hello Everyone!")
-       (line Audience "Hello <Presenter>!")
+       (line Presenter "Hello everyone.")
+       (line Audience "Hello <Presenter>.")
        (line Presenter
-             "Please rise and join us in singing, in full voice, hymn number 1, `Come to FARM and hear our music'!")
+             "Please rise and join us in singing, in full voice, song number 3, `Come to FARM and hear our music'.")
        (stage-direction "the audience rises"))
       (voice@ [main] (hymn-number 3)))))
 
@@ -89,9 +85,10 @@
 ;; arm-diagram -> image conversion is left to `program-scribble`, so a
 ;; chuck or strudel run doesn't write EPS dancers it has no use for.
 (define-art program-finale
-  (@ [(art-section finale) (name dance)]
+  (@ [(art-section finale)]
      (ix--
       (art-title "Finale — Everybody Dance!")
+      (bg "goldenrod")
       (script
        (line Presenter "And now, the grand finale! On your feet — follow the dancers: rest, arms out, arms UP!")
        (stage-direction "the troupe leads the whole porch in the dance"))
@@ -119,22 +116,17 @@
   (@ [(art-section slides)]
      (ix--
       (art-title "Talk")
-      talk-deck)))
+      (resource slides))))
 
 (define-art program
   hymnal
+  resources
   (ix--
    program-prelude
    program-opening-hymn
    program-talk
    program-finale)
-  (hymn-number->score)
-
-  (rewrite-in-music
-   (voice@ [bass] (clef bass)))
-
-  (@ [(art-section opening-hymn)]
-    (rewrite-in-music farm-bass)))
+)
   
 
 ;; Scribble-only: the section background colors.  Comment this out and
@@ -143,13 +135,16 @@
 ;; `program-scribble`.
 (define-art program-scribble
   program
+  (hymn-number->title)
+  (resource->title)
   ;; Turn the finale's arm-diagrams into EPS dancer figures the
   ;; lilypond realizer can hang above the staff.  One-arg form writes
   ;; to ./resources (cwd is this file's dir, same as pldi's musicxml)
   ;; with absolute refs, so the .ly still finds them after scribble
   ;; cd's into scribble-resources to compile.
   (rewrite-in-music
-   (arm-diagrams->images "resources")))
+   (arm-diagrams->images "resources"))
+)
 
 ;; Strudel-only: tag every note with a synth voice.  The colors would
 ;; do nothing here, and the instrument would do nothing in the PDF --
@@ -169,10 +164,17 @@
 ;; for now.
 (define-art program-chuck
   program
+  (hymn-number->score)
+  (resource->contents)
   (rewrite-in-music
-   (channel 1)
-   (voice@ [main] (channel 1))
-   (voice@ [bass] (channel 9))))
+   (voice@ [bass] (clef bass)))
+  (@ [(art-section opening-hymn)]
+     (rewrite-in-music
+      farm-bass
+      (dilate 3/2)))
+  (channel 1)
+  (voice@ [main] (channel 1))
+  (voice@ [bass] (channel 9)))
 
 ;; Naming `program` first is how you build on it.  An override replaces
 ;; the base rather than adding to it, so a `program-scribble` that did
