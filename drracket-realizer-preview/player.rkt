@@ -31,6 +31,7 @@
          racket/system
          racket/match
          racket/string
+         racket/async-channel
          setup/collection-search
          (only-in tonart do-send-chuck do-advance-time-chuck))
 
@@ -206,44 +207,110 @@
     (report "!! On the MIDI path this usually means the notes have no channel.")
     (report "!! Assign one in the program, e.g. (voice@ (soprano) (channel 1)).")))
 
-(define (perform! timeline ck-out stop?)
-  (define total (length timeline))
+;; A one-line summary of an event, for the paused prompt in manual mode.
+;; Script lines carry their text so the presenter can read their cue --
+;; whether they say it themselves or let `play` speak it.
+(define (event-summary ev)
+  (match ev
+    [(list 'mark label)      (format "~a" label)]
+    [(list 'music _ secs)    (format "music · ~a s" (real->decimal-string secs 1))]
+    [(list 'speak who text)  (format "~a: ~a" who text)]
+    [(list 'direct text)     (format "(stage direction) ~a" text)]
+    [(list 'slide _)         "slides"]
+    [_                       "item"]))
+
+;; Perform a single event: send music to chuck and sleep out its length,
+;; speak dialogue and stage directions, raise a slide deck and hold.
+(define (perform-event! ev i total ck-out stop?)
+  (match ev
+    [(list 'mark label)
+     (report "[~a/~a] ~a" i total label)]
+    [(list 'music code secs)
+     (report "[~a/~a] music ~a s~a" i total (real->decimal-string secs 1)
+             (if (silent-block? code) "  ⚠ no events — see below" ""))
+     (when (silent-block? code) (warn-silent!))
+     (do-send-chuck ck-out code)
+     (do-advance-time-chuck ck-out secs)
+     (let wait ([left secs])
+       (when (and (> left 0) (not (stop?)))
+         (sleep (min 0.2 left))
+         (wait (- left 0.2))))]
+    [(list 'speak who text)
+     (report "[~a/~a] ~a" i total who)
+     (speak! text)]
+    [(list 'direct text)
+     (report "[~a/~a] (direction)" i total)
+     (speak! text DIRECTION-VOICE)]
+    [(list 'slide body)
+     (report "[~a/~a] slides — holding until the deck is closed" i total)
+     (show-slides! body)
+     (wait-slideshow! stop?)]
+    [_ (void)]))
+
+;; Automatic: walk the timeline end to end, letting each event run for
+;; its own length.
+(define (perform-auto! timeline total ck-out stop?)
   (for ([ev (in-list timeline)] [i (in-naturals 1)])
     (unless (stop?)
-      (match ev
-        [(list 'mark label)
-         (report "[~a/~a] ~a" i total label)]
-        [(list 'music code secs)
-         (report "[~a/~a] music ~a s~a" i total (real->decimal-string secs 1)
-                 (if (silent-block? code) "  ⚠ no events — see below" ""))
-         (when (silent-block? code) (warn-silent!))
-         (do-send-chuck ck-out code)
-         (do-advance-time-chuck ck-out secs)
-         (let wait ([left secs])
-           (when (and (> left 0) (not (stop?)))
-             (sleep (min 0.2 left))
-             (wait (- left 0.2))))]
-        [(list 'speak who text)
-         (report "[~a/~a] ~a" i total who)
-         (speak! text)]
-        [(list 'direct text)
-         (report "[~a/~a] (direction)" i total)
-         (speak! text DIRECTION-VOICE)]
-        [(list 'slide body)
-         (report "[~a/~a] slides — holding until the deck is closed" i total)
-         (show-slides! body)
-         (wait-slideshow! stop?)]
-        [_ (void)]))))
+      (perform-event! ev i total ck-out stop?))))
+
+;; Manual: pause before every performable item and wait for a command --
+;; `play` performs the current item and leaves us on it (so it can be
+;; repeated), `next`/`prev` step forward/back, `stop` ends.  Section
+;; marks carry no sound, so they are announced and stepped past rather
+;; than paused on.  Every other item is the presenter's choice: `play`
+;; to let the computer perform it, or step past having done it yourself.
+;;
+;; Indexed rather than list-walked, because `prev` has to reach items
+;; already behind the cursor.
+(define (perform-manual! vec total ck-out stop? next-cmd)
+  (define (mark-at? j) (and (pair? (vector-ref vec j)) (eq? 'mark (car (vector-ref vec j)))))
+  ;; Step one performable item from `from` in direction `dir` (+1 / -1),
+  ;; announcing any section marks crossed.  Returns the new index, or #f
+  ;; if the walk runs off that end.
+  (define (step from dir)
+    (let scan ([j (+ from dir)])
+      (cond
+        [(or (< j 0) (>= j total)) #f]
+        [(mark-at? j)
+         (perform-event! (vector-ref vec j) (add1 j) total ck-out stop?)
+         (scan (+ j dir))]
+        [else j])))
+  (define first (step -1 +1))
+  (when first
+    (let loop ([cur first])
+      (unless (stop?)
+        (define ev (vector-ref vec cur))
+        (report "[~a/~a] ⏸ ~a — Play to perform · Prev / Next to move"
+                (add1 cur) total (event-summary ev))
+        (let wait ()
+          (case (next-cmd)
+            [(play)
+             (perform-event! ev (add1 cur) total ck-out stop?)
+             (unless (stop?)
+               (report "[~a/~a] ✓ ~a — Prev / Next to move" (add1 cur) total (event-summary ev)))
+             (wait)]
+            [(next) (define n (step cur +1)) (if n (loop n) (void))]
+            [(prev) (define p (step cur -1)) (if p (loop p) (wait))]
+            [(stop) (void)]
+            [else (wait)]))))))
+
+(define (perform! timeline ck-out stop? manual? next-cmd)
+  (define total (length timeline))
+  (if manual?
+      (perform-manual! (list->vector timeline) total ck-out stop? next-cmd)
+      (perform-auto! timeline total ck-out stop?)))
 
 (module+ main
   (define args (current-command-line-arguments))
-  (unless (= 5 (vector-length args))
-    (raise-user-error 'player "expected <file> <working-dir> <tempo> <volume> <out>"))
+  (unless (= 6 (vector-length args))
+    (raise-user-error 'player "expected <file> <working-dir> <tempo> <volume> <out> <mode>"))
   (define path (path->complete-path (string->path (vector-ref args 0))))
   (define wd (path->complete-path (string->path (vector-ref args 1))))
   (define tempo (string->number (vector-ref args 2)))
   (define vol (string->number (vector-ref args 3)))
   (define out (vector-ref args 4))
+  (define manual? (string=? "manual" (vector-ref args 5)))
 
   (define root
     (let loop ([d (path-only path)])
@@ -255,8 +322,12 @@
         [else (define-values (p n dir?) (split-path d)) (loop (and (path? p) p))])))
 
   (define stopped (box #f))
-  ;; The panel closes our stdin to stop us.  Reading it is the whole
-  ;; stop protocol.
+  (define cmd-ch (make-async-channel))
+  ;; The panel talks to us over stdin, one line per command: `play`
+  ;; performs the current item, `next`/`prev` move between items, and
+  ;; closing the port (EOF) -- or a `stop` line -- ends the piece.  In
+  ;; automatic mode the panel only ever closes the port, so this
+  ;; collapses to the old stop-on-EOF protocol.
   ;; `void` matters: a module-level expression's value gets printed,
   ;; and a stray #<thread:...> on stdout corrupts the progress stream
   ;; the panel parses.
@@ -264,8 +335,17 @@
    (thread (lambda ()
              (let loop ()
                (define l (read-line))
-               (cond [(eof-object? l) (set-box! stopped #t)]
-                     [else (set-box! stopped #t)])))))
+               (cond
+                 [(eof-object? l)
+                  (set-box! stopped #t) (async-channel-put cmd-ch 'stop)]
+                 [else
+                  (case (string-trim l)
+                    [("play") (async-channel-put cmd-ch 'play) (loop)]
+                    [("next") (async-channel-put cmd-ch 'next) (loop)]
+                    [("prev") (async-channel-put cmd-ch 'prev) (loop)]
+                    [("stop")
+                     (set-box! stopped #t) (async-channel-put cmd-ch 'stop)]
+                    [else (loop)])])))))
 
   (define ck-out #f)
   (define ctl #f)
@@ -285,7 +365,8 @@
       (define-values (art timeline) (timeline-for path root tempo vol out))
       (report "~a · ~a events · ~a" art (length timeline) out)
       (set!-values (ck-out ctl) (start-chuck!))
-      (perform! timeline ck-out (lambda () (unbox stopped)))
+      (perform! timeline ck-out (lambda () (unbox stopped))
+                manual? (lambda () (async-channel-get cmd-ch)))
       (report (if (unbox stopped) "stopped" "done"))
       (shutdown!)
       (exit 0))))

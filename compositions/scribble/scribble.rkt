@@ -1121,11 +1121,15 @@
            ;; doesn't hunt for a command by that name.
            [({~literal art-title} c:str)
             #:when (colored-expr? expr)
+            ;; `+1`: a scribble `section` renders at display-depth 1
+            ;; (the document title occupies depth 0), so the promoted
+            ;; heading has to match, or a colored section title comes
+            ;; out at the larger document-title scale.
             (define d (max 0 (sub1 (art-section-depth expr))))
             #`(para #:style (make-style
                              #f (list (list 'tonart-colored-title
-                                            #,(+ section-depth-val d))))
-                    (larger (larger (bold #,(syntax-e #'c)))))]
+                                            #,(+ section-depth-val d 1))))
+                    (larger (bold #,(syntax-e #'c))))]
            ;; art-title renders as a heading at depth =
            ;; length of its art-section path minus one
            ;; (so an art-title in `(@ [(art-section ...)] …)`

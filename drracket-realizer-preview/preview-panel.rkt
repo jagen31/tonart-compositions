@@ -121,20 +121,19 @@
     (define blocks #f)          ; cached display list
     (define zoom 1.0)
     (define running #f)         ; the live subprocess, if any
-    ;; `running` is only set once the subprocess actually exists, which
-    ;; leaves a window where an auto tick could start a second run.
-    ;; This flag is set synchronously instead.
+    ;; `running` is only set once the subprocess actually exists; this
+    ;; flag is set synchronously so a second render can't slip in during
+    ;; that window.
     (define in-flight? #f)
     (define generation 0)       ; discards results from cancelled runs
-    (define last-rendered #f)   ; source text the cache corresponds to
-    (define last-seen #f)       ; source text at the previous auto tick
-    (define last-change-ms 0)
     (define outcome #f)         ; #f while never run / in flight, else 'ok or 'error
     (define mode 'scribble)     ; realizer the last / next run uses
     (define realized-art #f)    ; which binding the last run actually used
     (define strudel-code #f)    ; last handed-off source; kept for introspection only
-    (define player #f)          ; the playback subprocess, if any
-    (define player-in #f)       ; its stdin -- closing it is the stop signal
+    (define player #f)          ; the running player subprocess, if any
+    (define player-in #f)       ; its stdin -- lines are commands, close = stop
+    (define player-manual? #f)  ; is the running player a manual performance?
+    (define player-ready? #f)   ; has it finished realizing and started performing?
     ;; Which working directory this file's realizers want.  Most
     ;; compositions build from their own directory, but some reach for
     ;; repo-root-relative paths -- widor's `load-musicxml` does -- so a
@@ -170,16 +169,12 @@
       (new button% [label "Strudel ▸"] [parent bar]
            [callback (lambda (b e) (strudel-run))]))
 
-    (define play-button
-      (new button% [label "Play ▸"] [parent bar]
-           [callback (lambda (b e) (toggle-play))]))
-
     ;; Which output path the chuck realizer uses.  Not a cosmetic
     ;; choice: Tone is `SawOsc => dac`, audible on its own; MIDI is
     ;; `MidiOut` on "IAC Driver Bus 1", which is silent unless that port
     ;; is enabled in Audio MIDI Setup and something is listening.
     (define out-choice
-      (new radio-box% [label #f] [parent bar2]
+      (new radio-box% [label #f] [parent bar]
            [choices '("Tone" "MIDI")]
            [style '(horizontal)]
            [selection (if (eq? 'midi (preferences:get 'realizer-preview:out)) 1 0)]
@@ -187,20 +182,42 @@
                        (preferences:set 'realizer-preview:out (out-mode))
                        (sync-out-controls!))]))
 
-    (define auto-box
-      (new check-box% [label "Auto"] [parent bar2]
-           [callback (lambda (b e) (set-auto (send b get-value)))]))
-
     ;; Per-voice oscillator gain, as `(volume n)` -> `n/10 => gain` in
     ;; chuck.  Baked in when the timeline is realized, so it takes
     ;; effect on the next Play, not mid-piece.
     (define volume-slider
-      (new slider% [label "Vol"] [parent bar2]
+      (new slider% [label "Vol"] [parent bar]
            [min-value 1] [max-value 10]
            [init-value (preferences:get 'realizer-preview:volume)]
            [min-width 70] [stretchable-width #f]
            [callback (lambda (s e)
                        (preferences:set 'realizer-preview:volume (send s get-value)))]))
+
+    ;; ---- performance transport (row 2) ----
+    ;;
+    ;; `Play` always works: with no performance running it plays the
+    ;; whole program automatically (and becomes `Stop`), and during a
+    ;; manual performance it performs the current item (replayable).
+    ;;
+    ;; `Perform Myself` starts a manual performance -- one that pauses
+    ;; before every item -- and becomes `Stop Performance` for its
+    ;; duration.  `Prev` / `Next` step between items; they are live only
+    ;; once the performance has finished realizing, and dead otherwise.
+    (define play-button
+      (new button% [label "Play ▸"] [parent bar2]
+           [callback (lambda (b e) (on-play))]))
+
+    (define perform-button
+      (new button% [label "Perform Myself"] [parent bar2]
+           [callback (lambda (b e) (toggle-performance))]))
+
+    (define prev-button
+      (new button% [label "◂ Prev"] [parent bar2] [enabled #f]
+           [callback (lambda (b e) (send-cmd 'prev))]))
+
+    (define next-button
+      (new button% [label "Next ▸"] [parent bar2] [enabled #f]
+           [callback (lambda (b e) (send-cmd 'next))]))
 
     ;; A slider, not −/+ buttons: macOS floors every button at ~84px, so
     ;; two cost 168px of pane width.  The range has to stay small,
@@ -240,9 +257,6 @@
     (define relayout-timer
       (new timer% [notify-callback (lambda () (relayout))] [just-once? #t]))
 
-    (define auto-timer
-      (new timer% [notify-callback (lambda () (auto-tick))]))
-
     (define/private (schedule-relayout)
       (when blocks (send relayout-timer start 120 #t)))
 
@@ -259,35 +273,6 @@
     (define/private (set-zoom z)
       (set! zoom (max 0.5 (min 3.0 z)))
       (relayout))
-
-    (define/private (set-auto on?)
-      (cond
-        [on?
-         (set! last-seen #f)
-         (send auto-timer start 700)]
-        [else (send auto-timer stop)]))
-
-    ;; Re-run once the source has been quiet for a moment, using
-    ;; whichever realizer was last chosen.  Polling the buffer rather
-    ;; than hooking `after-save-file` means unsaved edits are realized
-    ;; too, and it touches nothing internal to DrRacket.
-    (define/private (auto-tick)
-      (define src (get-source))
-      (when src
-        (define text (cadr src))
-        (cond
-          [(equal? text last-seen)
-           ;; Scribble only.  The strudel button hands off to the
-           ;; browser, and re-firing that on every pause would open a
-           ;; tab per keystroke-burst.
-           (when (and (eq? mode 'scribble)
-                      (not in-flight?)
-                      (not (equal? text last-rendered))
-                      (>= (- (current-inexact-milliseconds) last-change-ms) 1200))
-             (render-now 'scribble))]
-          [else
-           (set! last-seen text)
-           (set! last-change-ms (current-inexact-milliseconds))])))
 
     (define/private (kill-running)
       (when running
@@ -333,11 +318,55 @@
     (define/private (sync-out-controls!)
       (send volume-slider enable (eq? 'audio (out-mode))))
 
-    (define/private (set-play-label!)
-      (send play-button set-label (if player "Stop ■" "Play ▸")))
+    ;; Three resting states; `Play` is live in all of them.
+    ;;   idle    : Play plays all,     Perform Myself starts,   Next off
+    ;;   auto    : Play -> Stop,       Perform Myself off,      Next off
+    ;;   manual  : Play plays current, Perform Myself -> Stop,   Next on-when-ready
+    (define/private (update-transport-controls!)
+      (cond
+        [(and player player-manual?)
+         (send play-button set-label "Play ▸")
+         (send play-button enable #t)
+         (send perform-button set-label "Stop Performance")
+         (send perform-button enable #t)
+         (send prev-button enable player-ready?)
+         (send next-button enable player-ready?)]
+        [player
+         (send play-button set-label "Stop ■")
+         (send play-button enable #t)
+         (send perform-button set-label "Perform Myself")
+         (send perform-button enable #f)
+         (send prev-button enable #f)
+         (send next-button enable #f)]
+        [else
+         (send play-button set-label "Play ▸")
+         (send play-button enable #t)
+         (send perform-button set-label "Perform Myself")
+         (send perform-button enable #t)
+         (send prev-button enable #f)
+         (send next-button enable #f)]))
 
-    (define/private (toggle-play)
-      (if player (stop-play) (start-play)))
+    ;; Send one command to the live player over its stdin.  A no-op when
+    ;; nothing is playing.
+    (define/private (send-cmd cmd)
+      (when player-in
+        (with-handlers ([(lambda (_) #t) void])
+          (displayln (symbol->string cmd) player-in)
+          (flush-output player-in))))
+
+    ;; `Play`: perform the current item in a manual performance, stop an
+    ;; automatic playback, or (idle) start one that plays the whole thing.
+    (define/private (on-play)
+      (cond
+        [(and player player-manual?) (send-cmd 'play)]
+        [player (stop-play)]
+        [else (start-play #f)]))
+
+    ;; `Perform Myself` / `Stop Performance`.  Disabled during automatic
+    ;; playback, so this is only reached idle (start) or mid-performance
+    ;; (stop).
+    (define/private (toggle-performance)
+      (if player (stop-play) (start-play #t)))
 
     (define/private (stop-play)
       (when player-in
@@ -353,10 +382,11 @@
                     (with-handlers ([(lambda (_) #t) void])
                       (subprocess-kill sp #t)))))))
 
-    (define/private (start-play)
+    (define/private (start-play manual?)
       (define-values (src dir cleanup) (materialize))
       (cond
-        [(not src) (status "Save this file to a directory first.")]
+        [(not src)
+         (status "Save this file to a directory first.")]
         [else
          (define cwd (hash-ref cwd-cache (path->string src) dir))
          (define-values (sp out in err)
@@ -368,11 +398,14 @@
                          (path->string cwd)
                          (number->string play-tempo)
                          (number->string (send volume-slider get-value))
-                         (symbol->string (out-mode)))))
+                         (symbol->string (out-mode))
+                         (if manual? "manual" "auto"))))
          (set! player sp)
          (set! player-in in)
-         (set-play-label!)
-         (status "Starting playback…")
+         (set! player-manual? manual?)
+         (set! player-ready? #f)
+         (update-transport-controls!)
+         (status "Realizing…")
          ;; Drain stderr; the realize phase is chatty and a full pipe
          ;; would stall the player.
          (void (thread (lambda ()
@@ -384,7 +417,17 @@
                (define l (read-line out))
                (unless (eof-object? l)
                  (queue-callback
-                  (lambda () (when (eq? sp player) (status l))) #f)
+                  (lambda ()
+                    (when (eq? sp player)
+                      ;; The first per-item line (`[i/total] …`) means
+                      ;; realizing is done and the player is performing --
+                      ;; the point at which `Next` becomes usable.
+                      (when (and (not player-ready?)
+                                 (regexp-match? #rx"^\\[" l))
+                        (set! player-ready? #t)
+                        (update-transport-controls!))
+                      (status l)))
+                  #f)
                  (loop)))
              (subprocess-wait sp)
              (cleanup)
@@ -393,7 +436,9 @@
                 (when (eq? sp player)
                   (set! player #f)
                   (set! player-in #f)
-                  (set-play-label!)))
+                  (set! player-manual? #f)
+                  (set! player-ready? #f)
+                  (update-transport-controls!)))
               #f))))]))
 
     ;; Write the buffer somewhere the program's own relative `require`s
@@ -449,7 +494,6 @@
                           zoom)
          (status "")]
         [else
-         (define text (cadr (get-source)))
          (define key (path->string src))
          (set! in-flight? #t)
          (status (format "Realizing (~a)…" m))
@@ -467,7 +511,6 @@
                   (set! running #f)
                   (set! in-flight? #f)
                   (set-buttons-enabled! #t)
-                  (set! last-rendered text)
                   (case (car result)
                     [(ok)
                      (set! strudel-code #f)
@@ -531,7 +574,6 @@
                          zoom)))
 
     (define/public (shutdown)
-      (send auto-timer stop)
       (set! generation (add1 generation))   ; discard anything still in flight
       (set! in-flight? #f)
       (kill-running)
@@ -543,6 +585,7 @@
       (when sp (sync/timeout 5 sp)))
 
     (sync-out-controls!)
+    (update-transport-controls!)
 
     (render-message! doc-text
                      "Scribble renders the program as a document here.\n\nStrudel \u25b8 realizes the .strudel source and opens it in a REPL on localhost:4321.\n\nEach realizes `program-scribble` / `program-strudel` if the module provides one, and `program` otherwise."
